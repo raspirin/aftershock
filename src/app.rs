@@ -1,8 +1,11 @@
+use components::left_column::{Footer, Header};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
     components::{Outlet, ParentRoute, Route, Router, Routes}, path, StaticSegment
 };
+
+mod components;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
     view! {
@@ -41,6 +44,7 @@ pub fn App() -> impl IntoView {
                 <ParentRoute path=StaticSegment("/") view=MainPage>
                     <Route path=path!("") view=|| "HomePage Content" />
                     <Route path=path!("posts") view=|| "Posts" />
+                    <Route path=path!("about") view=|| "About" />
                 </ParentRoute>
             </Routes>
         </Router>
@@ -53,22 +57,10 @@ fn MainPage() -> impl IntoView {
     // Creates a reactive value to update the button
 
     view! {
-        <nav>
-            <ul>
-                <li>
-                    <a href="/" title="Home">
-                        "Home"
-                    </a>
-                </li>
-                <li>
-                    <a href="/posts" title="Posts">
-                        "Posts"
-                    </a>
-                </li>
-            </ul>
-        </nav>
+        <Header />
         <main>
             <Outlet />
         </main>
+        <Footer />
     }
 }
