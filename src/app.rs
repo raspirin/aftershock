@@ -2,7 +2,8 @@ use components::left_column::{Footer, Header};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
-    components::{Outlet, ParentRoute, Route, Router, Routes}, path, StaticSegment
+    components::{Outlet, ParentRoute, Route, Router, Routes},
+    path, StaticSegment,
 };
 
 mod components;

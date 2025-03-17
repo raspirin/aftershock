@@ -28,8 +28,8 @@ pub fn Header() -> impl IntoView {
 pub fn Footer() -> impl IntoView {
     view! {
         <footer>
-        <div>"Aftershock made with Love and Rust"</div>
-        <div>"(c) 2025 Aspirin"</div>
+            <div>"Aftershock made with Love and Rust"</div>
+            <div>"(c) 2025 Aspirin"</div>
         </footer>
     }
 }
