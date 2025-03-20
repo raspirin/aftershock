@@ -8,3 +8,7 @@ opt-level = 'z'
 lto = true
 codegen-units = 1
 panic = "abort"
+
+[workspace.dependencies]
+axum = { version = "0.7" }
+tokio = { version = "1", features = ["rt-multi-thread"] }

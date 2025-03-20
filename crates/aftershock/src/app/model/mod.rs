@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use nid::Nanoid;
+use std::collections::HashMap;
 
 pub struct PostIndex {
     pub title: String,
