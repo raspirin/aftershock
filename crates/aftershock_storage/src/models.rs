@@ -6,6 +6,8 @@ use diesel::{
 };
 use serde::{Deserialize, Serialize};
 
+use crate::utils;
+
 #[derive(FromSqlRow, Serialize, Deserialize)]
 pub enum ContentKind {
     Post,
@@ -70,10 +72,11 @@ pub struct NewContent<'a> {
 
 impl<'a> NewContent<'a> {
     pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool) -> Self {
-        let created_at = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .expect("System time error! Do we have a time machine?")
-            .as_secs() as i64;
+        // let created_at = std::time::SystemTime::now()
+        //     .duration_since(std::time::UNIX_EPOCH)
+        //     .expect("System time error! Do we have a time machine?")
+        //     .as_secs() as i64;
+        let created_at = utils::now();
         let kind = kind.into();
 
         Self {
@@ -96,4 +99,17 @@ impl<'a> From<&'a aftershock_bridge::NewPost> for NewContent<'a> {
             value.published,
         )
     }
+}
+
+#[derive(AsChangeset, Deserialize)]
+#[diesel(table_name = crate::schema::contents)]
+pub struct UpdateContent {
+    #[serde(default)]
+    pub updated_at: Option<i64>,
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub body: Option<String>,
+    #[serde(default)]
+    pub published: Option<bool>,
 }

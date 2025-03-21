@@ -1,6 +1,6 @@
 use axum::{Json, extract::Path};
 use diesel::prelude::*;
-use models::{Content, NewContent};
+use models::{Content, NewContent, UpdateContent};
 use pool::{DbPool, get_connection_pool};
 use std::sync::LazyLock;
 
@@ -8,12 +8,13 @@ pub mod error;
 pub mod models;
 pub mod pool;
 pub mod schema;
+mod utils;
 
 type Result<T> = std::result::Result<T, error::Error>;
 
 static POOL: LazyLock<DbPool> = LazyLock::new(get_connection_pool);
 
-pub async fn get_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
+pub async fn get_published_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
@@ -26,20 +27,31 @@ pub async fn get_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     Ok(Json(ret))
 }
 
+pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
+    use schema::contents::dsl::*;
+
+    let conn = &mut POOL.clone().get()?;
+    let results = contents
+        .select(Content::as_select())
+        .load(conn)?;
+    let ret = results.into_iter().map(|x| x.into()).collect();
+
+    Ok(Json(ret))
+}
+
 pub async fn get_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
 
-    let mut ret = contents
-        .filter(id.eq(post_id))
-        .limit(1)
+    let ret = contents
+        .find(post_id)
         .select(Content::as_select())
-        .load(conn)?;
-    if ret.is_empty() {
-        Err(error::Error::NotFound("Post not found".into()))
-    } else {
-        Ok(Json(ret.pop().unwrap()))
+        .first(conn)
+        .optional()?;
+    match ret {
+        Some(ret) => Ok(Json(ret)),
+        None => Err(error::Error::NotFound("Post not found.".into())),
     }
 }
 
@@ -51,6 +63,24 @@ pub async fn create_post(Json(post): Json<aftershock_bridge::NewPost>) -> Result
 
     let ret = diesel::insert_into(contents)
         .values(&new_content)
+        .returning(Content::as_returning())
+        .get_result(conn)?;
+
+    Ok(Json(ret))
+}
+
+pub async fn update_post(
+    Path(post_id): Path<i32>,
+    Json(mut updated_set): Json<UpdateContent>,
+) -> Result<Json<Content>> {
+    use schema::contents::dsl::*;
+
+    let conn = &mut POOL.clone().get()?;
+    let now = utils::now();
+    updated_set.updated_at = Some(now);
+
+    let ret = diesel::update(contents.find(post_id))
+        .set(&updated_set)
         .returning(Content::as_returning())
         .get_result(conn)?;
 

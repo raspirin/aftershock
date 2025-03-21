@@ -37,6 +37,7 @@ dependencies = [
 name = "aftershock_bridge"
 version = "0.1.0"
 dependencies = [
+ "diesel",
  "serde",
 ]
 
