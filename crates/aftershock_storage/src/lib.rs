@@ -22,7 +22,8 @@ pub async fn get_published_posts() -> Result<Json<Vec<aftershock_bridge::Post>>>
         .filter(published.eq(true))
         .select(Content::as_select())
         .load(conn)?;
-    let ret = results.into_iter().map(|x| x.into()).collect();
+    let mut ret: Vec<aftershock_bridge::Post> = results.into_iter().map(|x| x.into()).collect();
+    ret.sort_by(|lhs, rhs| rhs.created_at.cmp(&lhs.created_at));
 
     Ok(Json(ret))
 }
@@ -32,7 +33,8 @@ pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
 
     let conn = &mut POOL.clone().get()?;
     let results = contents.select(Content::as_select()).load(conn)?;
-    let ret = results.into_iter().map(|x| x.into()).collect();
+    let mut ret: Vec<aftershock_bridge::Post> = results.into_iter().map(|x| x.into()).collect();
+    ret.sort_by(|lhs, rhs| rhs.created_at.cmp(&lhs.created_at));
 
     Ok(Json(ret))
 }
