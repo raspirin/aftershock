@@ -4,8 +4,9 @@ use diesel::{
     prelude::*,
     sql_types::Text,
 };
+use serde::{Deserialize, Serialize};
 
-#[derive(FromSqlRow)]
+#[derive(FromSqlRow, Serialize, Deserialize)]
 pub enum ContentKind {
     Post,
 }
@@ -32,7 +33,7 @@ where
     }
 }
 
-#[derive(Queryable, Selectable)]
+#[derive(Queryable, Selectable, Serialize, Deserialize)]
 #[diesel(table_name = crate::schema::contents, check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Content {
     pub id: i32,
@@ -64,10 +65,11 @@ pub struct NewContent<'a> {
     updated_at: i64,
     pub title: &'a str,
     pub body: &'a str,
+    pub published: bool,
 }
 
 impl<'a> NewContent<'a> {
-    pub fn new(kind: ContentKind, title: &'a str, body: &'a str) -> Self {
+    pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool) -> Self {
         let created_at = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .expect("System time error! Do we have a time machine?")
@@ -80,6 +82,18 @@ impl<'a> NewContent<'a> {
             updated_at: created_at,
             title,
             body,
+            published,
         }
+    }
+}
+
+impl<'a> From<&'a aftershock_bridge::NewPost> for NewContent<'a> {
+    fn from(value: &'a aftershock_bridge::NewPost) -> Self {
+        Self::new(
+            ContentKind::Post,
+            &value.title,
+            &value.body,
+            value.published,
+        )
     }
 }

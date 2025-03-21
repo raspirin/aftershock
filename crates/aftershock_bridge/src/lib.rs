@@ -8,3 +8,10 @@ pub struct Post {
     pub title: String,
     pub body: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct NewPost {
+    pub title: String,
+    pub body: String,
+    pub published: bool,
+}
