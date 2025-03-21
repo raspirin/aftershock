@@ -44,6 +44,18 @@ pub struct Content {
     pub published: bool,
 }
 
+impl From<Content> for aftershock_bridge::Post {
+    fn from(value: Content) -> Self {
+        Self {
+            id: value.id,
+            created_at: value.created_at,
+            updated_at: value.updated_at,
+            title: value.title,
+            body: value.body,
+        }
+    }
+}
+
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::contents, check_for_backend(diesel::sqlite::Sqlite))]
 pub struct NewContent<'a> {

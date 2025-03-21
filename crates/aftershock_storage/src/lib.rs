@@ -1,17 +1,30 @@
+use axum::Json;
 use diesel::prelude::*;
-use dotenvy::dotenv;
 use models::{Content, ContentKind, NewContent};
-use std::env;
+use pool::{DbPool, get_connection_pool};
+use std::sync::LazyLock;
 
 pub mod models;
+pub mod pool;
 pub mod schema;
 
-pub fn establish_connection() -> SqliteConnection {
-    dotenv().ok();
+static POOL: LazyLock<DbPool> = LazyLock::new(|| get_connection_pool());
 
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL is expected.");
-    SqliteConnection::establish(&database_url)
-        .unwrap_or_else(|_| panic!("Can not establish database connection."))
+pub async fn get_posts() -> Json<Vec<aftershock_bridge::Post>> {
+    use schema::contents::dsl::*;
+
+    let conn = &mut POOL
+        .clone()
+        .get()
+        .expect("Fail to get a connection from pool.");
+    let results = contents
+        .filter(published.eq(true))
+        .select(Content::as_select())
+        .load(conn)
+        .unwrap();
+    let ret = results.into_iter().map(|x| x.into()).collect();
+
+    Json(ret)
 }
 
 pub fn create_post(conn: &mut SqliteConnection, title: &str, body: &str) -> Content {
