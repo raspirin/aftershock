@@ -31,9 +31,7 @@ pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
-    let results = contents
-        .select(Content::as_select())
-        .load(conn)?;
+    let results = contents.select(Content::as_select()).load(conn)?;
     let ret = results.into_iter().map(|x| x.into()).collect();
 
     Ok(Json(ret))
@@ -81,6 +79,18 @@ pub async fn update_post(
 
     let ret = diesel::update(contents.find(post_id))
         .set(&updated_set)
+        .returning(Content::as_returning())
+        .get_result(conn)?;
+
+    Ok(Json(ret))
+}
+
+pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
+    use schema::contents::dsl::*;
+
+    let conn = &mut POOL.clone().get()?;
+
+    let ret = diesel::delete(contents.find(post_id))
         .returning(Content::as_returning())
         .get_result(conn)?;
 
