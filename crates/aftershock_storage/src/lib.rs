@@ -63,6 +63,11 @@ pub async fn get_published_posts() -> Result<Json<Vec<aftershock_bridge::Post>>>
     Ok(Json(tags_per_content))
 }
 
+pub async fn get_published_posts_meta() -> Result<Json<Vec<aftershock_bridge::PostMeta>>> {
+    let Json(posts) = get_published_posts().await?;
+    Ok(Json(posts.into_iter().map(|post| post.into()).collect()))
+}
+
 pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     use schema::contents;
     use schema::tags;

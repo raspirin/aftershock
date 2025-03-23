@@ -26,3 +26,15 @@ pub struct PostMeta {
     pub title: String,
     pub tags: Vec<String>,
 }
+
+impl From<Post> for PostMeta {
+    fn from(value: Post) -> Self {
+        Self {
+            uid: value.uid,
+            created_at: value.created_at,
+            updated_at: value.updated_at,
+            title: value.title,
+            tags: value.tags,
+        }
+    }
+}
