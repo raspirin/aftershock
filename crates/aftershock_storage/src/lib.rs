@@ -5,14 +5,36 @@ use pool::{DbPool, get_connection_pool};
 use std::sync::LazyLock;
 
 pub mod error;
-pub mod models;
-pub mod pool;
-pub mod schema;
+mod models;
+mod pool;
+mod schema;
 mod utils;
 
 type Result<T> = std::result::Result<T, error::Error>;
 
 static POOL: LazyLock<DbPool> = LazyLock::new(get_connection_pool);
+
+pub use private::*;
+
+mod private {
+    use super::*;
+
+    pub async fn get_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
+        use schema::contents::dsl::*;
+
+        let conn = &mut POOL.clone().get()?;
+
+        let ret = contents
+            .find(post_id)
+            .select(Content::as_select())
+            .first(conn)
+            .optional()?;
+        match ret {
+            Some(ret) => Ok(Json(ret)),
+            None => Err(error::Error::NotFound("Post not found.".into())),
+        }
+    }
+}
 
 pub async fn get_published_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     use schema::contents::dsl::*;
@@ -39,23 +61,28 @@ pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     Ok(Json(ret))
 }
 
-pub async fn get_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
+
+pub async fn get_post_by_uid(
+    Path(post_uid): Path<String>,
+) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
 
     let ret = contents
-        .find(post_id)
+        .filter(uid.eq(post_uid))
         .select(Content::as_select())
         .first(conn)
         .optional()?;
     match ret {
-        Some(ret) => Ok(Json(ret)),
+        Some(ret) => Ok(Json(ret.into())),
         None => Err(error::Error::NotFound("Post not found.".into())),
     }
 }
 
-pub async fn create_post(Json(post): Json<aftershock_bridge::NewPost>) -> Result<Json<Content>> {
+pub async fn create_post(
+    Json(post): Json<aftershock_bridge::NewPost>,
+) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
@@ -66,13 +93,13 @@ pub async fn create_post(Json(post): Json<aftershock_bridge::NewPost>) -> Result
         .returning(Content::as_returning())
         .get_result(conn)?;
 
-    Ok(Json(ret))
+    Ok(Json(ret.into()))
 }
 
 pub async fn update_post(
     Path(post_id): Path<i32>,
     Json(mut updated_set): Json<UpdateContent>,
-) -> Result<Json<Content>> {
+) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
@@ -84,10 +111,10 @@ pub async fn update_post(
         .returning(Content::as_returning())
         .get_result(conn)?;
 
-    Ok(Json(ret))
+    Ok(Json(ret.into()))
 }
 
-pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
+pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents::dsl::*;
 
     let conn = &mut POOL.clone().get()?;
@@ -96,5 +123,5 @@ pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
         .returning(Content::as_returning())
         .get_result(conn)?;
 
-    Ok(Json(ret))
+    Ok(Json(ret.into()))
 }

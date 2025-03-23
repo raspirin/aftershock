@@ -12,3 +12,4 @@ aftershock_bridge = { path = "../aftershock_bridge", features = ["diesel"] }
 serde.workspace = true
 thiserror.workspace = true
 r2d2 = "0.8.10"
+nid.workspace = true

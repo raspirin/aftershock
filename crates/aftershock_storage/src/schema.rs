@@ -9,5 +9,6 @@ diesel::table! {
         title -> Text,
         body -> Text,
         published -> Bool,
+        uid -> Text,
     }
 }

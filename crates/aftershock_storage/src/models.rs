@@ -45,12 +45,13 @@ pub struct Content {
     pub title: String,
     pub body: String,
     pub published: bool,
+    pub uid: String,
 }
 
 impl From<Content> for aftershock_bridge::Post {
     fn from(value: Content) -> Self {
         Self {
-            id: value.id,
+            uid: value.uid,
             created_at: value.created_at,
             updated_at: value.updated_at,
             title: value.title,
@@ -68,16 +69,14 @@ pub struct NewContent<'a> {
     pub title: &'a str,
     pub body: &'a str,
     pub published: bool,
+    pub uid: String,
 }
 
 impl<'a> NewContent<'a> {
     pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool) -> Self {
-        // let created_at = std::time::SystemTime::now()
-        //     .duration_since(std::time::UNIX_EPOCH)
-        //     .expect("System time error! Do we have a time machine?")
-        //     .as_secs() as i64;
         let created_at = utils::now();
         let kind = kind.into();
+        let uid = utils::Nid::new().to_string();
 
         Self {
             kind,
@@ -86,6 +85,7 @@ impl<'a> NewContent<'a> {
             title,
             body,
             published,
+            uid,
         }
     }
 }
