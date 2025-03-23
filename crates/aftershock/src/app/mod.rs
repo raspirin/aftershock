@@ -7,10 +7,9 @@ use leptos_router::{
     components::{Outlet, ParentRoute, Route, Router, Routes},
     path, StaticSegment,
 };
-use model::PostsIndex;
 
 mod components;
-mod model;
+mod pages;
 mod server;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
@@ -57,15 +56,6 @@ pub fn App() -> impl IntoView {
         </Router>
     }
 }
-
-// #[server]
-// async fn get_posts_index() -> Result<PostsIndex, ServerFnError> {
-//     let mut map = HashMap::new();
-
-//     PostsIndex {
-//         map
-//     }
-// }
 
 /// Renders the home page of your application.
 #[component]

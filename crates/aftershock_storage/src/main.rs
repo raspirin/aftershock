@@ -1,5 +1,6 @@
 use aftershock_storage::{
-    create_post, delete_post, get_all_posts, get_post, get_post_by_uid, get_published_posts, get_published_posts_meta, update_post
+    create_post, delete_post, get_all_posts, get_post, get_post_by_uid, get_published_posts,
+    get_published_posts_meta, update_post,
 };
 use axum::{Router, routing::get};
 
@@ -15,6 +16,6 @@ async fn main() {
         )
         .route("/api/v1/posts/uid/:post_uid", get(get_post_by_uid));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
