@@ -8,7 +8,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::utils;
 
-#[derive(FromSqlRow, Serialize, Deserialize)]
+pub trait IntoPost {
+    fn into_post(self) -> aftershock_bridge::Post;
+}
+
+#[derive(FromSqlRow, PartialEq, Serialize, Deserialize, Debug)]
 pub enum ContentKind {
     Post,
 }
@@ -35,7 +39,7 @@ where
     }
 }
 
-#[derive(Queryable, Selectable, Serialize, Deserialize)]
+#[derive(Queryable, Selectable, Identifiable, PartialEq, Serialize, Deserialize, Debug)]
 #[diesel(table_name = crate::schema::contents, check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Content {
     pub id: i32,
@@ -48,14 +52,17 @@ pub struct Content {
     pub uid: String,
 }
 
-impl From<Content> for aftershock_bridge::Post {
-    fn from(value: Content) -> Self {
-        Self {
-            uid: value.uid,
-            created_at: value.created_at,
-            updated_at: value.updated_at,
-            title: value.title,
-            body: value.body,
+impl IntoPost for (Content, Vec<Tag>) {
+    fn into_post(self) -> aftershock_bridge::Post {
+        let (content, tags) = self;
+        let tags = tags.into_iter().map(|tag| tag.into()).collect();
+        aftershock_bridge::Post {
+            uid: content.uid,
+            created_at: content.created_at,
+            updated_at: content.updated_at,
+            title: content.title,
+            body: content.body,
+            tags,
         }
     }
 }
@@ -112,4 +119,48 @@ pub struct UpdateContent {
     pub body: Option<String>,
     #[serde(default)]
     pub published: Option<bool>,
+}
+
+#[derive(Queryable, Selectable, Identifiable, PartialEq, Serialize, Deserialize, Debug)]
+#[diesel(table_name = crate::schema::tags, check_for_backend(diesel::sqlite::Sqlite))]
+pub struct Tag {
+    pub id: i32,
+    pub tag: String,
+}
+
+impl From<Tag> for String {
+    fn from(value: Tag) -> Self {
+        value.tag
+    }
+}
+
+#[derive(Insertable, AsChangeset)]
+#[diesel(table_name = crate::schema::tags, check_for_backend(diesel::sqlite::Sqlite))]
+pub struct NewTag<'a> {
+    pub tag: &'a str,
+}
+
+impl<'a> From<&'a String> for NewTag<'a> {
+    fn from(value: &'a String) -> Self {
+        Self {
+            tag: value.as_str(),
+        }
+    }
+}
+
+#[derive(Queryable, Selectable, Identifiable, Insertable, Associations, PartialEq, Debug)]
+#[diesel(table_name = crate::schema::contents_tags, check_for_backend(diesel::sqlite::Sqlite))]
+#[diesel(belongs_to(Content, foreign_key = content_id))]
+#[diesel(belongs_to(Tag, foreign_key = tag_id))]
+#[diesel(primary_key(content_id, tag_id))]
+pub struct ContentTag {
+    pub content_id: i32,
+    pub tag_id: i32,
+}
+
+impl From<(i32, i32)> for ContentTag {
+    fn from(value: (i32, i32)) -> Self {
+        let (content_id, tag_id) = value;
+        Self { content_id, tag_id }
+    }
 }

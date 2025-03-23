@@ -1,6 +1,6 @@
 use aftershock_storage::{
-    create_post, delete_post, get_all_posts, get_post_by_uid, get_published_posts,
-    update_post, get_post
+    create_post, delete_post, get_all_posts, get_post, get_post_by_uid, get_published_posts,
+    update_post,
 };
 use axum::{Router, routing::get};
 

@@ -6,6 +6,7 @@ pub struct Post {
     pub created_at: i64,
     pub updated_at: i64,
     pub title: String,
+    pub tags: Vec<String>,
     pub body: String,
 }
 
@@ -13,6 +14,7 @@ pub struct Post {
 pub struct NewPost {
     pub title: String,
     pub body: String,
+    pub tags: Vec<String>,
     pub published: bool,
 }
 
@@ -22,4 +24,5 @@ pub struct PostMeta {
     pub created_at: i64,
     pub updated_at: i64,
     pub title: String,
+    pub tags: Vec<String>,
 }
