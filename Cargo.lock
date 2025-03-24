@@ -28,7 +28,6 @@ dependencies = [
  "leptos_axum",
  "leptos_meta",
  "leptos_router",
- "nid",
  "reqwest",
  "tokio",
  "wasm-bindgen",
