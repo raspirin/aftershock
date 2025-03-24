@@ -1,5 +1,4 @@
 pub mod app;
-mod html_render;
 mod utils;
 
 #[cfg(feature = "hydrate")]
