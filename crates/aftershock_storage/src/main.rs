@@ -16,6 +16,6 @@ async fn main() {
         )
         .route("/api/v1/posts/uid/:post_uid", get(get_post_by_uid));
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:3001").await.unwrap();
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3030").await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }

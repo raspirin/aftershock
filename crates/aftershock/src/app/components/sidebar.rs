@@ -13,9 +13,6 @@ pub fn Header() -> impl IntoView {
                         <a href="/">"主页"</a>
                     </li>
                     <li>
-                        <a href="/posts">"博文"</a>
-                    </li>
-                    <li>
                         <a href="/about">"关于"</a>
                     </li>
                 </ul>
@@ -28,7 +25,7 @@ pub fn Header() -> impl IntoView {
 pub fn Footer() -> impl IntoView {
     view! {
         <footer>
-            <div>"Aftershock made with Love and Rust"</div>
+            <div>"Aftershock made with Love"</div>
             <div>"(c) 2025 Aspirin"</div>
         </footer>
     }

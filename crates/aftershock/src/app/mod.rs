@@ -1,12 +1,11 @@
-use std::collections::HashMap;
-
-use components::sidebar::{Footer, Header};
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
-    components::{Outlet, ParentRoute, Route, Router, Routes},
+    components::{ParentRoute, Route, Router, Routes},
     path, StaticSegment,
 };
+use pages::main_page::MainPage;
+use pages::{home_page::HomePage, post_page::PostPage};
 
 mod components;
 mod pages;
@@ -48,23 +47,11 @@ pub fn App() -> impl IntoView {
         <Router>
             <Routes fallback=|| "Page not found.".into_view()>
                 <ParentRoute path=StaticSegment("/") view=MainPage>
-                    <Route path=path!("") view=|| "HomePage Content" />
-                    <Route path=path!("posts") view=|| "Posts" />
+                    <Route path=path!("") view=HomePage />
                     <Route path=path!("about") view=|| "About" />
+                    <Route path=path!("post/:uid") view=PostPage />
                 </ParentRoute>
             </Routes>
         </Router>
-    }
-}
-
-/// Renders the home page of your application.
-#[component]
-fn MainPage() -> impl IntoView {
-    view! {
-        <Header />
-        <main>
-            <Outlet />
-        </main>
-        <Footer />
     }
 }

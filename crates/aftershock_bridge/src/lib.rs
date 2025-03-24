@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Post {
     pub uid: String,
     pub created_at: i64,
@@ -18,7 +18,7 @@ pub struct NewPost {
     pub published: bool,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct PostMeta {
     pub uid: String,
     pub created_at: i64,
