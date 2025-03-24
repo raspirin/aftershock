@@ -1,0 +1,9 @@
+[package]
+name = "aftershock_cli"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+aftershock_bridge = { path = "../aftershock_bridge" }
+clap = { version = "4.5.32", features = ["derive"] }
+pulldown-cmark = "0.13.0"
