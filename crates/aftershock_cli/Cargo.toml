@@ -7,3 +7,4 @@ edition = "2024"
 aftershock_bridge = { path = "../aftershock_bridge" }
 clap = { version = "4.5.32", features = ["derive"] }
 pulldown-cmark = "0.13.0"
+reqwest.workspace = true

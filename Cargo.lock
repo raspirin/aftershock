@@ -47,6 +47,7 @@ dependencies = [
  "aftershock_bridge",
  "clap",
  "pulldown-cmark",
+ "reqwest",
 ]
 
 [[package]]
