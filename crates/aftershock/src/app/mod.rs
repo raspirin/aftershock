@@ -49,7 +49,7 @@ pub fn App() -> impl IntoView {
                 <ParentRoute path=StaticSegment("/") view=MainPage>
                     <Route path=path!("") view=HomePage />
                     <Route path=path!("about") view=|| "About" />
-                    <Route path=path!("post/:uid") view=PostPage />
+                    <Route path=path!("posts/:uid") view=PostPage />
                 </ParentRoute>
             </Routes>
         </Router>

@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 #[component]
 pub fn PostMeta(post_meta: aftershock_bridge::PostMeta) -> impl IntoView {
-    let url = format!("/post/{}", post_meta.uid);
+    let url = format!("/posts/{}", post_meta.uid);
     view! {
         <div class:post_meta>
             <h2>
