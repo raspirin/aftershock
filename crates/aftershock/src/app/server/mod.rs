@@ -1,5 +1,6 @@
 use leptos::prelude::*;
 
+#[cfg(feature = "ssr")]
 static API_BASE: &'static str = "http://127.0.0.1:3030/api/v1";
 
 #[server]
