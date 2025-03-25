@@ -2,6 +2,9 @@ use axum::{Json, extract::Path};
 use diesel::prelude::*;
 use models::{Content, ContentTag, IntoPost, NewContent, NewTag, Tag, UpdateContent};
 use pool::{DbPool, get_connection_pool};
+use schema::contents;
+use schema::contents_tags;
+use schema::tags;
 use std::sync::LazyLock;
 
 pub mod error;
@@ -34,6 +37,15 @@ mod private {
             None => Err(error::Error::NotFound("Post not found.".into())),
         }
     }
+}
+
+fn get_tags_from_content(content: &Content) -> Result<Vec<Tag>> {
+    let conn = &mut POOL.clone().get()?;
+    let tags = ContentTag::belonging_to(content)
+        .inner_join(tags::table)
+        .select(Tag::as_select())
+        .load(conn)?;
+    Ok(tags)
 }
 
 pub async fn get_published_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
@@ -96,7 +108,6 @@ pub async fn get_post_by_uid(
     Path(post_uid): Path<String>,
 ) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents;
-    use schema::tags;
 
     let conn = &mut POOL.clone().get()?;
 
@@ -108,12 +119,14 @@ pub async fn get_post_by_uid(
 
     let ret = posts
         .map(|post| {
-            ContentTag::belonging_to(&post)
-                .inner_join(tags::table)
-                .select(Tag::as_select())
-                .load(conn)
-                .map(|tags| (post, tags).into_post())
-                .ok()
+            // ContentTag::belonging_to(&post)
+            //     .inner_join(tags::table)
+            //     .select(Tag::as_select())
+            //     .load(conn)
+            //     .map(|tags| (post, tags).into_post())
+            //     .ok()
+            let tags = get_tags_from_content(&post);
+            tags.map(|tags| (post, tags).into_post()).ok()
         })
         .flatten();
 
@@ -166,7 +179,7 @@ pub async fn update_post(
     Json(mut updated_set): Json<UpdateContent>,
 ) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents;
-    use schema::tags;
+    // use schema::tags;
 
     let conn = &mut POOL.clone().get()?;
     let now = utils::now();
@@ -177,10 +190,25 @@ pub async fn update_post(
         .returning(Content::as_returning())
         .get_result(conn)?;
 
-    let tags = ContentTag::belonging_to(&content)
-        .inner_join(tags::table)
-        .select(Tag::as_select())
-        .load(conn)?;
+    let tags = get_tags_from_content(&content)?;
+
+    Ok(Json((content, tags).into_post()))
+}
+
+pub async fn update_post_by_uid(
+    Path(post_uid): Path<String>,
+    Json(mut updated_set): Json<UpdateContent>,
+) -> Result<Json<aftershock_bridge::Post>> {
+    let conn = &mut POOL.clone().get()?;
+    let now = utils::now();
+    updated_set.updated_at = Some(now);
+
+    let content = diesel::update(contents::table.filter(contents::uid.eq(post_uid)))
+        .set(updated_set)
+        .returning(Content::as_returning())
+        .get_result(conn)?;
+
+    let tags = get_tags_from_content(&content)?;
 
     Ok(Json((content, tags).into_post()))
 }
@@ -188,7 +216,6 @@ pub async fn update_post(
 pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents;
     use schema::contents_tags;
-    use schema::tags;
 
     let conn = &mut POOL.clone().get()?;
 
@@ -196,10 +223,29 @@ pub async fn delete_post(Path(post_id): Path<i32>) -> Result<Json<aftershock_bri
         .returning(Content::as_returning())
         .get_result(conn)?;
 
-    let tags = ContentTag::belonging_to(&content)
-        .inner_join(tags::table)
-        .select(Tag::as_returning())
-        .get_results(conn)?;
+    // let tags = ContentTag::belonging_to(&content)
+    //     .inner_join(tags::table)
+    //     .select(Tag::as_returning())
+    //     .get_results(conn)?;
+    let tags = get_tags_from_content(&content)?;
+
+    diesel::delete(contents_tags::table.filter(contents_tags::content_id.eq(content.id)))
+        .execute(conn)?;
+
+    Ok(Json((content, tags).into_post()))
+}
+
+pub async fn delete_post_by_uid(
+    Path(post_uid): Path<String>,
+) -> Result<Json<aftershock_bridge::Post>> {
+    let conn = &mut POOL.clone().get()?;
+
+    let content = diesel::delete(contents::table.filter(contents::uid.eq(post_uid)))
+        .returning(Content::as_returning())
+        .get_result(conn)?;
+
+    let tags = get_tags_from_content(&content)?;
+
     diesel::delete(contents_tags::table.filter(contents_tags::content_id.eq(content.id)))
         .execute(conn)?;
 
