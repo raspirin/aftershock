@@ -1,0 +1,75 @@
+use std::sync::LazyLock;
+
+use pulldown_cmark::{Event, MetadataBlockKind, Options, Parser, Tag, TagEnd};
+use serde::{Deserialize, Serialize};
+
+static OPTIONS: LazyLock<Options> = LazyLock::new(|| get_options());
+
+#[derive(Debug)]
+pub struct ParserOutput {
+    pub metadata: ParserOutputMetadata,
+    pub html: String,
+}
+
+impl ParserOutput {
+    pub fn new(metadata: ParserOutputMetadata, html: String) -> Self {
+        Self { metadata, html }
+    }
+}
+
+impl From<ParserOutput> for aftershock_bridge::NewPost {
+    fn from(value: ParserOutput) -> Self {
+        Self {
+            title: value.metadata.title,
+            body: value.html,
+            tags: value.metadata.tags,
+            published: false,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ParserOutputMetadata {
+    pub title: String,
+    pub tags: Vec<String>,
+}
+
+fn get_options() -> Options {
+    let mut ret = Options::empty();
+    ret.insert(Options::ENABLE_TABLES);
+    ret.insert(Options::ENABLE_GFM);
+    ret.insert(Options::ENABLE_FOOTNOTES);
+    ret.insert(Options::ENABLE_STRIKETHROUGH);
+    ret.insert(Options::ENABLE_TASKLISTS);
+    ret.insert(Options::ENABLE_YAML_STYLE_METADATA_BLOCKS);
+    ret.insert(Options::ENABLE_MATH);
+    ret
+}
+
+fn get_parser(text: &str) -> Parser {
+    Parser::new_ext(text, *OPTIONS)
+}
+
+pub fn parse(text: &str) -> ParserOutput {
+    let parser = get_parser(text);
+
+    let mut inside_metadata = false;
+    let mut metadata = None;
+    for event in parser.into_iter() {
+        match event {
+            Event::Start(Tag::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
+                inside_metadata = true
+            }
+            Event::Text(m) if inside_metadata => metadata = Some(m.clone()),
+            Event::End(TagEnd::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
+                inside_metadata = false
+            }
+            _ => {}
+        }
+    }
+    let metadata = toml::from_str::<ParserOutputMetadata>(&*metadata.unwrap()).unwrap();
+
+    let mut html = String::new();
+    pulldown_cmark::html::push_html(&mut html, get_parser(text));
+    ParserOutput::new(metadata, html)
+}

@@ -48,6 +48,9 @@ dependencies = [
  "clap",
  "pulldown-cmark",
  "reqwest",
+ "serde",
+ "serde_json",
+ "toml",
 ]
 
 [[package]]
@@ -2148,6 +2151,7 @@ dependencies = [
  "base64",
  "bytes",
  "encoding_rs",
+ "futures-channel",
  "futures-core",
  "futures-util",
  "h2",
