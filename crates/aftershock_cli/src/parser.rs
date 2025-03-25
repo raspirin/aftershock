@@ -50,12 +50,13 @@ fn get_parser(text: &str) -> Parser {
     Parser::new_ext(text, *OPTIONS)
 }
 
-pub fn parse(text: &str) -> ParserOutput {
-    let parser = get_parser(text);
-
+fn parse_metadata<'e, I>(events: I) -> ParserOutputMetadata
+where
+    I: Iterator<Item = &'e Event<'e>>,
+{
     let mut inside_metadata = false;
     let mut metadata = None;
-    for event in parser.into_iter() {
+    for event in events {
         match event {
             Event::Start(Tag::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
                 inside_metadata = true
@@ -68,8 +69,16 @@ pub fn parse(text: &str) -> ParserOutput {
         }
     }
     let metadata = toml::from_str::<ParserOutputMetadata>(&*metadata.unwrap()).unwrap();
+    metadata
+}
+
+pub fn parse(text: &str) -> ParserOutput {
+    let parser = get_parser(text);
+
+    let events: Vec<_> = parser.into_iter().collect();
+    let metadata = parse_metadata(events.iter());
 
     let mut html = String::new();
-    pulldown_cmark::html::push_html(&mut html, get_parser(text));
+    pulldown_cmark::html::push_html(&mut html, events.into_iter());
     ParserOutput::new(metadata, html)
 }

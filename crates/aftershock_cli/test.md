@@ -8,4 +8,12 @@ tags = ["tag1", "tag2"]
 ##### h5
 ###### h6
 
-this is main body.
+This is main body.
+
+This is another paragraph.
+
+```rust
+fn main() {
+    println!("Hello, World.")
+}
+```
