@@ -12,6 +12,6 @@ fn main() {
         Commands::View { id } => println!("{}", view(id)),
         Commands::Delete { id } => println!("{}", delete(id)),
         Commands::Update { path, id } => todo!(),
-        Commands::Publish { id } => todo!(),
+        Commands::Publish { id } => println!("{}", publish(id)),
     }
 }

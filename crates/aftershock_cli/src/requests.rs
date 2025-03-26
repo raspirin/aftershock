@@ -1,7 +1,14 @@
-use ::reqwest::header::CONTENT_TYPE;
+use std::sync::LazyLock;
+
+use ::reqwest::{IntoUrl, blocking::Response, header::CONTENT_TYPE};
 use reqwest::blocking as reqwest;
 
 static API_BASE: &str = "http://127.0.0.1:3030/api/v1";
+static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| reqwest::Client::new());
+
+fn get<U: IntoUrl>(url: U) -> Result<Response, ::reqwest::Error> {
+    CLIENT.get(url).send()
+}
 
 pub fn add(path: String) -> String {
     let url = format!("{API_BASE}/posts");
@@ -9,7 +16,7 @@ pub fn add(path: String) -> String {
     let output = crate::parser::parse(&input);
     let new_post: aftershock_bridge::NewPost = output.into();
     let new_post = serde_json::to_string(&new_post).unwrap();
-    let client = reqwest::Client::new();
+    let client = &CLIENT;
     let body = client
         .post(url)
         .header(CONTENT_TYPE, "application/json")
@@ -17,15 +24,13 @@ pub fn add(path: String) -> String {
         .send()
         .unwrap()
         .json::<aftershock_bridge::Post>()
-        // .text()
         .unwrap();
     serde_json::to_string_pretty(&body).unwrap()
-    // body
 }
 
 pub fn list() -> String {
-    let url = format!("{API_BASE}/posts/meta");
-    let body = reqwest::get(url)
+    let url = format!("{API_BASE}/posts/all-meta");
+    let body = get(url)
         .unwrap()
         .json::<Vec<aftershock_bridge::PostMeta>>()
         .unwrap();
@@ -34,7 +39,7 @@ pub fn list() -> String {
 
 pub fn view(id: String) -> String {
     let url = format!("{API_BASE}/posts/uid/{id}");
-    let body = reqwest::get(url);
+    let body = get(url);
     serde_json::to_string_pretty(
         &body
             .ok()
@@ -45,7 +50,7 @@ pub fn view(id: String) -> String {
 
 pub fn delete(id: String) -> String {
     let url = format!("{API_BASE}/posts/uid/{id}");
-    let client = reqwest::Client::new();
+    let client = &CLIENT;
     let body = client
         .delete(url)
         .send()
@@ -53,4 +58,23 @@ pub fn delete(id: String) -> String {
         .json::<aftershock_bridge::Post>()
         .unwrap();
     serde_json::to_string_pretty(&body).unwrap()
+}
+
+pub fn publish(id: String) -> String {
+    let url = format!("{API_BASE}/posts/uid/{id}");
+    let body = aftershock_bridge::UpdatePost {
+        title: None,
+        body: None,
+        published: Some(true),
+    };
+    let body = serde_json::to_string(&body).unwrap();
+    let post = CLIENT
+        .put(url)
+        .header(CONTENT_TYPE, "application/json")
+        .body(body)
+        .send()
+        .unwrap()
+        .json::<aftershock_bridge::Post>()
+        .unwrap();
+    serde_json::to_string_pretty(&post).unwrap()
 }

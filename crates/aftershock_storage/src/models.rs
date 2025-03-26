@@ -121,6 +121,17 @@ pub struct UpdateContent {
     pub published: Option<bool>,
 }
 
+impl From<aftershock_bridge::UpdatePost> for UpdateContent {
+    fn from(value: aftershock_bridge::UpdatePost) -> Self {
+        Self {
+            updated_at: None,
+            title: value.title,
+            body: value.body,
+            published: value.published,
+        }
+    }
+}
+
 #[derive(Queryable, Selectable, Identifiable, PartialEq, Serialize, Deserialize, Debug)]
 #[diesel(table_name = crate::schema::tags, check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Tag {

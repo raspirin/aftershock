@@ -72,7 +72,7 @@ where
             _ => {}
         }
     }
-    
+
     toml::from_str::<ParserOutputMetadata>(&metadata.unwrap()).unwrap()
 }
 

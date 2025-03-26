@@ -104,6 +104,11 @@ pub async fn get_all_posts() -> Result<Json<Vec<aftershock_bridge::Post>>> {
     Ok(Json(tags_per_content))
 }
 
+pub async fn get_all_posts_meta() -> Result<Json<Vec<aftershock_bridge::PostMeta>>> {
+    let Json(posts) = get_all_posts().await?;
+    Ok(Json(posts.into_iter().map(|post| post.into()).collect()))
+}
+
 pub async fn get_post_by_uid(
     Path(post_uid): Path<String>,
 ) -> Result<Json<aftershock_bridge::Post>> {
@@ -117,17 +122,16 @@ pub async fn get_post_by_uid(
         .first(conn)
         .optional()?;
 
-    let ret = posts
-        .and_then(|post| {
-            // ContentTag::belonging_to(&post)
-            //     .inner_join(tags::table)
-            //     .select(Tag::as_select())
-            //     .load(conn)
-            //     .map(|tags| (post, tags).into_post())
-            //     .ok()
-            let tags = get_tags_from_content(&post);
-            tags.map(|tags| (post, tags).into_post()).ok()
-        });
+    let ret = posts.and_then(|post| {
+        // ContentTag::belonging_to(&post)
+        //     .inner_join(tags::table)
+        //     .select(Tag::as_select())
+        //     .load(conn)
+        //     .map(|tags| (post, tags).into_post())
+        //     .ok()
+        let tags = get_tags_from_content(&post);
+        tags.map(|tags| (post, tags).into_post()).ok()
+    });
 
     match ret {
         Some(ret) => Ok(Json(ret)),
@@ -175,13 +179,14 @@ pub async fn create_post(
 
 pub async fn update_post(
     Path(post_id): Path<i32>,
-    Json(mut updated_set): Json<UpdateContent>,
+    Json(updated_set): Json<aftershock_bridge::UpdatePost>,
 ) -> Result<Json<aftershock_bridge::Post>> {
     use schema::contents;
     // use schema::tags;
 
     let conn = &mut POOL.clone().get()?;
     let now = utils::now();
+    let mut updated_set: UpdateContent = updated_set.into();
     updated_set.updated_at = Some(now);
 
     let content = diesel::update(contents::table.find(post_id))

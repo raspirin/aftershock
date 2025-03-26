@@ -38,3 +38,13 @@ impl From<Post> for PostMeta {
         }
     }
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct UpdatePost {
+    #[serde(default)]
+    pub title: Option<String>,
+    #[serde(default)]
+    pub body: Option<String>,
+    #[serde(default)]
+    pub published: Option<bool>,
+}
