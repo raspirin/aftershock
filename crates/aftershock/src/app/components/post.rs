@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::{app::components::AfTime, utils::datetime::PreformattedDateTime};
+use crate::app::components::AfTime;
 
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
