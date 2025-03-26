@@ -1,7 +1,7 @@
 use ::reqwest::header::CONTENT_TYPE;
 use reqwest::blocking as reqwest;
 
-static API_BASE: &'static str = "http://127.0.0.1:3030/api/v1";
+static API_BASE: &str = "http://127.0.0.1:3030/api/v1";
 
 pub fn add(path: String) -> String {
     let url = format!("{API_BASE}/posts");

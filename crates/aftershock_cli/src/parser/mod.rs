@@ -7,7 +7,7 @@ use two_face::theme::EmbeddedThemeName;
 
 mod highlighter;
 
-static OPTIONS: LazyLock<Options> = LazyLock::new(|| get_options());
+static OPTIONS: LazyLock<Options> = LazyLock::new(get_options);
 
 #[derive(Debug)]
 pub struct ParserOutput {
@@ -72,8 +72,8 @@ where
             _ => {}
         }
     }
-    let metadata = toml::from_str::<ParserOutputMetadata>(&*metadata.unwrap()).unwrap();
-    metadata
+    
+    toml::from_str::<ParserOutputMetadata>(&metadata.unwrap()).unwrap()
 }
 
 pub fn parse(text: &str) -> ParserOutput {

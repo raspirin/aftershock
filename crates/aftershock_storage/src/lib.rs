@@ -118,7 +118,7 @@ pub async fn get_post_by_uid(
         .optional()?;
 
     let ret = posts
-        .map(|post| {
+        .and_then(|post| {
             // ContentTag::belonging_to(&post)
             //     .inner_join(tags::table)
             //     .select(Tag::as_select())
@@ -127,8 +127,7 @@ pub async fn get_post_by_uid(
             //     .ok()
             let tags = get_tags_from_content(&post);
             tags.map(|tags| (post, tags).into_post()).ok()
-        })
-        .flatten();
+        });
 
     match ret {
         Some(ret) => Ok(Json(ret)),
