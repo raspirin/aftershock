@@ -1,7 +1,11 @@
 use std::sync::LazyLock;
 
+use highlighter::Highlighter;
 use pulldown_cmark::{Event, MetadataBlockKind, Options, Parser, Tag, TagEnd};
 use serde::{Deserialize, Serialize};
+use two_face::theme::EmbeddedThemeName;
+
+mod highlighter;
 
 static OPTIONS: LazyLock<Options> = LazyLock::new(|| get_options());
 
@@ -77,6 +81,9 @@ pub fn parse(text: &str) -> ParserOutput {
 
     let events: Vec<_> = parser.into_iter().collect();
     let metadata = parse_metadata(events.iter());
+
+    let highlighter = Highlighter::new(EmbeddedThemeName::Nord);
+    let events = highlighter.highlight(events.into_iter());
 
     let mut html = String::new();
     pulldown_cmark::html::push_html(&mut html, events.into_iter());

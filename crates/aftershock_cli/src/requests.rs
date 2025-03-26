@@ -5,7 +5,7 @@ static API_BASE: &'static str = "http://127.0.0.1:3030/api/v1";
 pub fn add(path: String) -> String {
     let input = std::fs::read_to_string(&path).unwrap();
     let output = crate::parser::parse(&input);
-    format!("{:?}", output)
+    format!("{}", output.html)
 }
 
 pub fn list() -> String {
