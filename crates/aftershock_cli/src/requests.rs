@@ -1,11 +1,26 @@
+use ::reqwest::header::CONTENT_TYPE;
 use reqwest::blocking as reqwest;
 
 static API_BASE: &'static str = "http://127.0.0.1:3030/api/v1";
 
 pub fn add(path: String) -> String {
+    let url = format!("{API_BASE}/posts");
     let input = std::fs::read_to_string(&path).unwrap();
     let output = crate::parser::parse(&input);
-    format!("{}", output.html)
+    let new_post: aftershock_bridge::NewPost = output.into();
+    let new_post = serde_json::to_string(&new_post).unwrap();
+    let client = reqwest::Client::new();
+    let body = client
+        .post(url)
+        .header(CONTENT_TYPE, "application/json")
+        .body(new_post)
+        .send()
+        .unwrap()
+        .json::<aftershock_bridge::Post>()
+        // .text()
+        .unwrap();
+    serde_json::to_string_pretty(&body).unwrap()
+    // body
 }
 
 pub fn list() -> String {
