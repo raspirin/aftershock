@@ -1,6 +1,37 @@
-@use 'reset.scss';
+@use "reset.scss";
+
+$page-width: 700px;
+$body-padding: 20px;
+
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
 
 body {
-	font-family: sans-serif;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.left_sidebar,
+.right_sidebar {
+    flex: 1;
+    max-width: 300px;
+    text-align: right;
+    margin: 0 20px;
+}
+
+main {
+    flex: 1 700px;
+    max-width: $page-width;
+    text-aligh: left;
+}
+
+.left_sidebar {
+    position: fixed;
+    top: $body-padding;
 }
