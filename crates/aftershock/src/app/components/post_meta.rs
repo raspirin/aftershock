@@ -17,11 +17,11 @@ pub fn PostMetaList(post_meta_list: Vec<aftershock_bridge::PostMeta>) -> impl In
 
     view! {
         <div class="flex flex-col gap-4 font-af-serif">
-        {posts
-            .into_iter()
-            .map(|(year, x)| view! { <PostMetaSection year=year post_meta_list=x /> })
-            .collect_view()}
-            </div>
+            {posts
+                .into_iter()
+                .map(|(year, x)| view! { <PostMetaSection year=year post_meta_list=x /> })
+                .collect_view()}
+        </div>
     }
 }
 
@@ -52,7 +52,9 @@ pub fn PostMeta(
 
     view! {
         <div class="flex flex-row items-center gap-4 w-full font-semibold">
-            <time datetime=machine_time class="pr-16 text-right w-fit flex-shrink-0">{human_time}</time>
+            <time datetime=machine_time class="pr-16 text-right w-fit flex-shrink-0">
+                {human_time}
+            </time>
             <h2 class="flex-grow">
                 <a href=url>{post_meta.title}</a>
             </h2>
