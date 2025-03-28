@@ -1,11 +1,13 @@
 use leptos::prelude::*;
 
+use crate::TITLE;
+
 #[component]
 pub fn Header() -> impl IntoView {
     view! {
         <header class="grid grid-flow-row gap-2 font-af-serif">
-            <a href="/" title="破碎镜隙映影" class="text-2xl font-bold">
-                "破碎镜隙映影"
+            <a href="/" title=TITLE class="text-2xl font-bold">
+                {TITLE}
             </a>
             <nav>
                 <ul class="grid grid-flow-col gap-4 justify-end font-semibold">

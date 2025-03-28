@@ -6,7 +6,7 @@ use leptos_router::{
 };
 use pages::{error_page::ErrorPage, home_page::HomePage, main_page::MainPage, post_page::PostPage};
 
-use crate::MSG_DATA_NOT_FOUND;
+use crate::{MSG_DATA_NOT_FOUND, TITLE};
 
 mod components;
 mod pages;
@@ -38,7 +38,7 @@ pub fn App() -> impl IntoView {
     view! {
         <Stylesheet id="leptos" href="/pkg/aftershock.css" />
 
-        <Title text="Aftershock" />
+        <Title text=TITLE />
 
         <Router>
             <Routes fallback=move || {
