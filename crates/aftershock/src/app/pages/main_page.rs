@@ -12,8 +12,8 @@ pub fn MainPage() -> impl IntoView {
                 <main>
                     <Outlet />
                 </main>
-                <div class="my-6"></div>
-                <Footer />
+                // <div class="my-6"></div>
+                // <Footer />
             </div>
         </div>
     }

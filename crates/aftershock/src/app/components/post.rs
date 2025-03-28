@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::app::components::{AfTime, Tag};
+use crate::app::components::{AfTime, License, Tag};
 
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
@@ -12,11 +12,12 @@ pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
                 <TagList tags=post.tags />
             </div>
             <div class="my-5"></div>
-            <div class="prose prose-stone max-w-none prose-table:mx-2" inner_html=post.body />
+            <div class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono" inner_html=post.body />
             <div class="flex flex-col justify-center items-center">
                 <div class="my-4" />
-                <div class="font-af-serif font-normal italic justify-center max-w-fit">fin</div>
+                <div class="font-af-serif font-medium italic justify-center max-w-fit">fin</div>
             </div>
+            <License />
         </article>
     }
 }
