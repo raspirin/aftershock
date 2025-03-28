@@ -1,47 +1,40 @@
 use leptos::prelude::*;
 
-use crate::app::components::AfTime;
+use crate::app::components::{AfTime, Tag};
 
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
     view! {
-        <div class:post_container>
-            <article class:post_article>
-                <h1 class:post_title>{post.title}</h1>
+        <article class="flex flex-col gap-0">
+            <h1 class="font-af-serif text-3xl font-bold">{post.title}</h1>
+            <div class="grid grid-flow-col gap-2 justify-start font-af-serif font-medium">
                 <AfTime timestamp=post.created_at />
                 <TagList tags=post.tags />
-                <div class:post_content inner_html=post.body />
-            </article>
-        </div>
+            </div>
+            <div class="my-5"></div>
+            <div class="prose prose-stone max-w-none prose-table:mx-2" inner_html=post.body />
+            <div class="flex flex-col justify-center items-center">
+            <div class="my-4" />
+            <div class="font-af-serif font-normal italic justify-center max-w-fit">fin</div>
+            </div>
+        </article>
     }
 }
 
 #[component]
 pub fn TagList(tags: Vec<String>) -> impl IntoView {
     view! {
-        <div class:post_tag_list>
-            <ul>
-                {tags
-                    .into_iter()
-                    .map(|tag| {
-                        view! {
-                            <li>
-                                <Tag tag=tag />
-                            </li>
-                        }
-                    })
-                    .collect::<Vec<_>>()}
-            </ul>
-        </div>
-    }
-}
-
-#[component]
-pub fn Tag(tag: String) -> impl IntoView {
-    let url = "/";
-    view! {
-        <div class:post_tag>
-            <a href=url>{tag}</a>
-        </div>
+        <ul class="grid grid-flow-col gap-0 justify-start max-w-fit italic">
+            {tags
+                .into_iter()
+                .map(|tag| {
+                    view! {
+                        <li class="max-w-fit">
+                            <Tag tag=tag />
+                        </li>
+                    }
+                })
+                .collect::<Vec<_>>()}
+        </ul>
     }
 }

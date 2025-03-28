@@ -1,5 +1,7 @@
 use leptos::prelude::*;
 
+use crate::app::components::Tag;
+
 #[component]
 pub fn PostMeta(post_meta: aftershock_bridge::PostMeta) -> impl IntoView {
     let url = format!("/posts/{}", post_meta.uid);
@@ -16,7 +18,7 @@ pub fn PostMeta(post_meta: aftershock_bridge::PostMeta) -> impl IntoView {
                         .map(|tag| {
                             view! {
                                 <li>
-                                    <PostMetaTag tag=tag />
+                                    <Tag tag=tag.clone() />
                                 </li>
                             }
                         })
@@ -25,10 +27,4 @@ pub fn PostMeta(post_meta: aftershock_bridge::PostMeta) -> impl IntoView {
             </div>
         </div>
     }
-}
-
-#[component]
-fn PostMetaTag<'a>(tag: &'a str) -> impl IntoView {
-    let tag = tag.to_string();
-    view! { <div class:post_meta_tag>{tag}</div> }
 }

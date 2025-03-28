@@ -8,10 +8,11 @@ pub fn MainPage() -> impl IntoView {
         <div class="bg-site-bright text-site-dark min-h-screen">
             <div class="mx-auto max-w-screen-sm flex flex-col">
                 <Header />
-                <div class="my-4"></div>
+                <div class="my-3"></div>
                 <main>
                     <Outlet />
                 </main>
+                <div class="my-6"></div>
                 <Footer />
             </div>
         </div>
