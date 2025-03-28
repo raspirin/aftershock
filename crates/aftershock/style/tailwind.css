@@ -2,6 +2,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+a:hover {
+    text-decoration: underline;
+}
+
 @theme {
     --color-site-dark: #1c1c1c;
     --color-site-bright: #f6f3f0;

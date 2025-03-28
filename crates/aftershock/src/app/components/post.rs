@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::app::components::{AfTime, License, Tag};
+use crate::app::components::{AfTime, License, TagListWithoutUl};
 
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
@@ -12,10 +12,12 @@ pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
                 <TagList tags=post.tags />
             </div>
             <div class="my-5"></div>
+            <div class="font-af-serif">
             <div
-                class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono"
+                class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono prose-a:no-underline prose-a:text-blue-500 prose-a:hover:underline"
                 inner_html=post.body
             />
+            </div>
             <div class="flex flex-col justify-center items-center">
                 <div class="my-4" />
                 <div class="font-af-serif font-medium italic justify-center max-w-fit">fin</div>
@@ -29,16 +31,7 @@ pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
 pub fn TagList(tags: Vec<String>) -> impl IntoView {
     view! {
         <ul class="grid grid-flow-col gap-0 justify-start max-w-fit italic">
-            {tags
-                .into_iter()
-                .map(|tag| {
-                    view! {
-                        <li class="max-w-fit">
-                            <Tag tag=tag />
-                        </li>
-                    }
-                })
-                .collect::<Vec<_>>()}
+            <TagListWithoutUl tags=tags />
         </ul>
     }
 }

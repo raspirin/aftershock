@@ -29,7 +29,7 @@
               'Noto Serif SC',
               'serif'
             ]
-          }
+          },
         }
       },
       plugins: [require("@tailwindcss/typography")],

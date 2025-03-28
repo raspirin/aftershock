@@ -3,6 +3,7 @@ use leptos::prelude::*;
 #[cfg(feature = "ssr")]
 static API_BASE: &'static str = "http://127.0.0.1:3030/api/v1";
 
+// FIXME: no unwrap in server function
 #[server]
 pub async fn get_published_posts_meta() -> Result<Vec<aftershock_bridge::PostMeta>, ServerFnError> {
     let url = format!("{API_BASE}/posts/meta");
