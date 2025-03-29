@@ -1,5 +1,6 @@
 ---
 title = "Test Title"
+kind = "post"
 tags = ["tag1", "tag2"]
 summary = "This is the summary"
 ---

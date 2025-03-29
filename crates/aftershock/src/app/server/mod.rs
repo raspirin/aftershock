@@ -22,3 +22,13 @@ pub async fn get_post_by_uid(uid: String) -> Result<aftershock_bridge::Post, Ser
         .await?;
     Ok(post)
 }
+
+#[server]
+pub async fn get_page(name: String) -> Result<aftershock_bridge::Post, ServerFnError> {
+    let url = format!("{API_BASE}/pages/uid/{name}");
+    let page = reqwest::get(url)
+        .await?
+        .json::<aftershock_bridge::Post>()
+        .await?;
+    Ok(page)
+}

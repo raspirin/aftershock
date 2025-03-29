@@ -6,6 +6,8 @@ use clap::{Parser, Subcommand};
 pub struct Cli {
     #[command(subcommand)]
     pub command: Commands,
+    #[arg(short, long)]
+    pub kind: String,
 }
 
 #[derive(Subcommand)]

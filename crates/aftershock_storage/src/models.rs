@@ -15,12 +15,14 @@ pub trait IntoPost {
 #[derive(FromSqlRow, PartialEq, Serialize, Deserialize, Debug)]
 pub enum ContentKind {
     Post,
+    Page,
 }
 
 impl From<ContentKind> for String {
     fn from(value: ContentKind) -> Self {
         match value {
             ContentKind::Post => "post".into(),
+            ContentKind::Page => "page".into(),
         }
     }
 }
@@ -32,9 +34,21 @@ where
 {
     fn from_sql(bytes: DB::RawValue<'_>) -> diesel::deserialize::Result<Self> {
         let kind = String::from_sql(bytes)?;
-        match kind.as_str() {
+        match ContentKind::try_from(kind.as_str()) {
+            Ok(kind) => Ok(kind),
+            Err(_) => Err(format!("Unrecognized content kind {kind}").into()),
+        }
+    }
+}
+
+impl TryFrom<&str> for ContentKind {
+    type Error = crate::error::Error;
+
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        match value {
             "post" => Ok(Self::Post),
-            otherwise => Err(format!("Unrecognized content type: {otherwise}").into()),
+            "page" => Ok(Self::Page),
+            _ => Err(crate::error::Error::ContentKindError),
         }
     }
 }
@@ -59,6 +73,7 @@ impl IntoPost for (Content, Vec<Tag>) {
         let tags = tags.into_iter().map(|tag| tag.into()).collect();
         aftershock_bridge::Post {
             uid: content.uid,
+            kind: content.kind.into(),
             created_at: content.created_at,
             updated_at: content.updated_at,
             title: content.title,
@@ -83,10 +98,19 @@ pub struct NewContent<'a> {
 }
 
 impl<'a> NewContent<'a> {
-    pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool, summary: Option<String>) -> Self {
+    pub fn new(
+        kind: ContentKind,
+        title: &'a str,
+        body: &'a str,
+        published: bool,
+        summary: Option<String>,
+    ) -> Self {
         let created_at = utils::now();
+        let uid = match kind {
+            ContentKind::Page => title.to_lowercase(),
+            _ => utils::Nid::new().to_string(),
+        };
         let kind = kind.into();
-        let uid = utils::Nid::new().to_string();
 
         Self {
             kind,
@@ -96,7 +120,7 @@ impl<'a> NewContent<'a> {
             body,
             published,
             uid,
-            summary
+            summary,
         }
     }
 }
@@ -104,11 +128,11 @@ impl<'a> NewContent<'a> {
 impl<'a> From<&'a aftershock_bridge::NewPost> for NewContent<'a> {
     fn from(value: &'a aftershock_bridge::NewPost) -> Self {
         Self::new(
-            ContentKind::Post,
+            ContentKind::try_from(value.kind.as_str()).unwrap(),
             &value.title,
             &value.body,
             value.published,
-            value.summary.clone()
+            value.summary.clone(),
         )
     }
 }

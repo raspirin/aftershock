@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Clone)]
 pub struct Post {
     pub uid: String,
+    pub kind: String,
     pub created_at: i64,
     pub updated_at: i64,
     pub title: String,
@@ -14,6 +15,7 @@ pub struct Post {
 #[derive(Serialize, Deserialize)]
 pub struct NewPost {
     pub title: String,
+    pub kind: String,
     pub body: String,
     pub tags: Vec<String>,
     pub published: bool,
@@ -23,6 +25,7 @@ pub struct NewPost {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct PostMeta {
     pub uid: String,
+    pub kind: String,
     pub created_at: i64,
     pub updated_at: i64,
     pub title: String,
@@ -34,6 +37,7 @@ impl From<Post> for PostMeta {
     fn from(value: Post) -> Self {
         Self {
             uid: value.uid,
+            kind: value.kind,
             created_at: value.created_at,
             updated_at: value.updated_at,
             title: value.title,

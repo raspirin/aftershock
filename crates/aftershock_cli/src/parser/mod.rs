@@ -25,10 +25,11 @@ impl From<ParserOutput> for aftershock_bridge::NewPost {
     fn from(value: ParserOutput) -> Self {
         Self {
             title: value.metadata.title,
+            kind: value.metadata.kind,
             body: value.html,
             tags: value.metadata.tags,
             published: false,
-            summary: value.metadata.summary
+            summary: value.metadata.summary,
         }
     }
 }
@@ -36,6 +37,7 @@ impl From<ParserOutput> for aftershock_bridge::NewPost {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct ParserOutputMetadata {
     pub title: String,
+    pub kind: String,
     pub tags: Vec<String>,
     pub summary: Option<String>,
 }

@@ -12,6 +12,9 @@ pub enum Error {
 
     #[error("Not Found: {0}")]
     NotFound(String),
+
+    #[error("Wrong content kind literal")]
+    ContentKindError,
 }
 
 impl IntoResponse for Error {

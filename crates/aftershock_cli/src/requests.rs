@@ -10,11 +10,14 @@ fn get<U: IntoUrl>(url: U) -> Result<Response, ::reqwest::Error> {
     CLIENT.get(url).send()
 }
 
-pub fn add(path: String) -> String {
-    let url = format!("{API_BASE}/posts");
+pub fn add(kind: String, path: String) -> String {
+    let url = format!("{API_BASE}/{kind}s");
     let input = std::fs::read_to_string(&path).unwrap();
     let output = crate::parser::parse(&input);
     let new_post: aftershock_bridge::NewPost = output.into();
+    if new_post.kind != kind {
+        panic!("Kind doesn't match!")
+    }
     let new_post = serde_json::to_string(&new_post).unwrap();
     let client = &CLIENT;
     let body = client
@@ -28,8 +31,8 @@ pub fn add(path: String) -> String {
     serde_json::to_string_pretty(&body).unwrap()
 }
 
-pub fn list() -> String {
-    let url = format!("{API_BASE}/posts/all-meta");
+pub fn list(kind: String) -> String {
+    let url = format!("{API_BASE}/{kind}s/all-meta");
     let body = get(url)
         .unwrap()
         .json::<Vec<aftershock_bridge::PostMeta>>()
@@ -37,8 +40,8 @@ pub fn list() -> String {
     serde_json::to_string_pretty(&body).unwrap()
 }
 
-pub fn view(id: String) -> String {
-    let url = format!("{API_BASE}/posts/uid/{id}");
+pub fn view(kind: String, id: String) -> String {
+    let url = format!("{API_BASE}/{kind}s/uid/{id}");
     let body = get(url);
     serde_json::to_string_pretty(
         &body
@@ -48,8 +51,8 @@ pub fn view(id: String) -> String {
     .unwrap()
 }
 
-pub fn delete(id: String) -> String {
-    let url = format!("{API_BASE}/posts/uid/{id}");
+pub fn delete(kind: String, id: String) -> String {
+    let url = format!("{API_BASE}/{kind}s/uid/{id}");
     let client = &CLIENT;
     let body = client
         .delete(url)
@@ -60,8 +63,8 @@ pub fn delete(id: String) -> String {
     serde_json::to_string_pretty(&body).unwrap()
 }
 
-pub fn publish(id: String) -> String {
-    let url = format!("{API_BASE}/posts/uid/{id}");
+pub fn publish(kind: String, id: String) -> String {
+    let url = format!("{API_BASE}/{kind}s/uid/{id}");
     let body = aftershock_bridge::UpdatePost {
         title: None,
         body: None,

@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::app::components::{content::ContentSerif, AfTime, License, TagListWithoutUl};
+use crate::app::components::{content::ContentSerif, AfTime, License, ProseContent, TagListWithoutUl};
 
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
@@ -13,10 +13,11 @@ pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
             </div>
             <div class="my-5"></div>
             <ContentSerif>
-                <div
-                    class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono prose-a:no-underline prose-a:text-blue-500 prose-a:hover:underline"
-                    inner_html=post.body
-                />
+                // <div
+                //     class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono prose-a:no-underline prose-a:text-blue-500 prose-a:hover:underline"
+                //     inner_html=post.body
+                // />
+                <ProseContent body=post.body />
             </ContentSerif>
             <div class="flex flex-col justify-center items-center">
                 <div class="my-4" />
