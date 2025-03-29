@@ -13,9 +13,9 @@ pub fn ContentSans(children: Children) -> impl IntoView {
 #[component]
 pub fn ProseContent(body: String) -> impl IntoView {
     view! {
-                <div
-                    class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono prose-a:no-underline prose-a:text-blue-500 prose-a:hover:underline"
-                    inner_html=body
-                />
+        <div
+            class="prose prose-stone max-w-none prose-table:mx-2 prose-pre:font-af-mono prose-a:no-underline prose-a:text-blue-500 prose-a:hover:underline"
+            inner_html=body
+        />
     }
 }
