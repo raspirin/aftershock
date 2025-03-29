@@ -48,6 +48,8 @@ version = "0.1.0"
 dependencies = [
  "aftershock_bridge",
  "clap",
+ "clap_complete",
+ "dotenvy",
  "pulldown-cmark",
  "reqwest",
  "serde",
@@ -406,6 +408,15 @@ dependencies = [
  "anstyle",
  "clap_lex",
  "strsim",
+]
+
+[[package]]
+name = "clap_complete"
+version = "4.5.47"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c06f5378ea264ad4f82bbc826628b5aad714a75abf6ece087e923010eb937fb6"
+dependencies = [
+ "clap",
 ]
 
 [[package]]

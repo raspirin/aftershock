@@ -10,3 +10,6 @@ target/
 *.pdb
 
 db/database.db
+
+completion/*
+!completion/.keep
