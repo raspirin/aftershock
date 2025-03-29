@@ -205,6 +205,7 @@ pub async fn get_content_by_uid(
 
     let posts = contents::table
         .filter(contents::uid.eq(post_uid))
+        .filter(contents::published.eq(true))
         .select(Content::as_select())
         .first(conn)
         .optional()?;
