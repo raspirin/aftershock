@@ -12,6 +12,7 @@ mod models;
 mod pool;
 mod schema;
 mod utils;
+pub mod migration;
 
 type Result<T> = std::result::Result<T, error::Error>;
 

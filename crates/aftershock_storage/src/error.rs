@@ -7,6 +7,8 @@ pub enum Error {
     DatabasePoolError(#[from] r2d2::Error),
     #[error("Database Error: {0}")]
     DatabaseError(#[from] diesel::result::Error),
+    #[error("Database Migration Error: {0}")]
+    MigrationError(#[from] Box<dyn core::error::Error + Send + Sync>),
 
     #[error("Not Found: {0}")]
     NotFound(String),
