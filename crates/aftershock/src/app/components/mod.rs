@@ -1,3 +1,4 @@
+mod content;
 mod license;
 mod message_card;
 mod post;
@@ -6,6 +7,7 @@ mod sidebar;
 mod tag;
 mod time;
 
+pub use content::*;
 pub use license::*;
 pub use message_card::*;
 pub use post::*;

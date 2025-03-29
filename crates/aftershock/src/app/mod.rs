@@ -4,7 +4,10 @@ use leptos_router::{
     components::{Outlet, ParentRoute, Route, Router, Routes},
     path, StaticSegment,
 };
-use pages::{error_page::ErrorPage, home_page::HomePage, main_page::MainPage, post_page::PostPage};
+use pages::{
+    about_page::AboutPage, archive_page::ArchivePage, error_page::ErrorPage, home_page::HomePage,
+    main_page::MainPage, post_page::PostPage,
+};
 
 use crate::{MSG_DATA_NOT_FOUND, TITLE};
 
@@ -59,8 +62,9 @@ pub fn App() -> impl IntoView {
                     }
                 >
                     <Route path=path!("") view=HomePage />
-                    <Route path=path!("about") view=|| "About" />
+                    <Route path=path!("about") view=AboutPage />
                     <Route path=path!("posts/:uid") view=PostPage />
+                    <Route path=path!("tags/:tag") view=ArchivePage />
                 </ParentRoute>
             </Routes>
         </Router>

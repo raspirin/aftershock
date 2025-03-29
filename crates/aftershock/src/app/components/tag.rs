@@ -2,7 +2,7 @@ use leptos::prelude::*;
 
 #[component]
 pub fn Tag(tag: String) -> impl IntoView {
-    let url = "/";
+    let url = format!("/tags/{tag}");
     view! { <a href=url>#{tag}</a> }
 }
 

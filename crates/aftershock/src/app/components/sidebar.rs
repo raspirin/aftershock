@@ -5,7 +5,7 @@ use crate::TITLE;
 #[component]
 pub fn Header() -> impl IntoView {
     view! {
-        <header class="grid grid-flow-row gap-2 font-af-serif">
+        <header class="grid grid-flow-row gap-2 font-af-serif pt-4">
             <a href="/" title=TITLE class="text-2xl font-bold">
                 {TITLE}
             </a>

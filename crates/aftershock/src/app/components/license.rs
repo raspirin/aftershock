@@ -7,6 +7,8 @@ pub fn License() -> impl IntoView {
             <a
                 href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
                 class="flex flex-row"
+                target="_blank"
+                rel="noopener noreferrer"
                 title="CC BY-NC-SA"
             >
                 <img

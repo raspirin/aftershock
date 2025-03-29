@@ -30,6 +30,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "reqwest",
+ "thiserror 2.0.12",
  "tokio",
  "wasm-bindgen",
 ]
