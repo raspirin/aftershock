@@ -50,6 +50,7 @@ pub struct Content {
     pub body: String,
     pub published: bool,
     pub uid: String,
+    pub summary: Option<String>,
 }
 
 impl IntoPost for (Content, Vec<Tag>) {
@@ -63,6 +64,7 @@ impl IntoPost for (Content, Vec<Tag>) {
             title: content.title,
             body: content.body,
             tags,
+            summary: content.summary,
         }
     }
 }
@@ -77,10 +79,11 @@ pub struct NewContent<'a> {
     pub body: &'a str,
     pub published: bool,
     pub uid: String,
+    pub summary: Option<String>,
 }
 
 impl<'a> NewContent<'a> {
-    pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool) -> Self {
+    pub fn new(kind: ContentKind, title: &'a str, body: &'a str, published: bool, summary: Option<String>) -> Self {
         let created_at = utils::now();
         let kind = kind.into();
         let uid = utils::Nid::new().to_string();
@@ -93,6 +96,7 @@ impl<'a> NewContent<'a> {
             body,
             published,
             uid,
+            summary
         }
     }
 }
@@ -104,6 +108,7 @@ impl<'a> From<&'a aftershock_bridge::NewPost> for NewContent<'a> {
             &value.title,
             &value.body,
             value.published,
+            value.summary.clone()
         )
     }
 }

@@ -28,6 +28,7 @@ impl From<ParserOutput> for aftershock_bridge::NewPost {
             body: value.html,
             tags: value.metadata.tags,
             published: false,
+            summary: value.metadata.summary
         }
     }
 }
@@ -36,6 +37,7 @@ impl From<ParserOutput> for aftershock_bridge::NewPost {
 pub struct ParserOutputMetadata {
     pub title: String,
     pub tags: Vec<String>,
+    pub summary: Option<String>,
 }
 
 fn get_options() -> Options {

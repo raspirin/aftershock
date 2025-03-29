@@ -8,6 +8,7 @@ pub struct Post {
     pub title: String,
     pub tags: Vec<String>,
     pub body: String,
+    pub summary: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -16,6 +17,7 @@ pub struct NewPost {
     pub body: String,
     pub tags: Vec<String>,
     pub published: bool,
+    pub summary: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -25,6 +27,7 @@ pub struct PostMeta {
     pub updated_at: i64,
     pub title: String,
     pub tags: Vec<String>,
+    pub summary: Option<String>,
 }
 
 impl From<Post> for PostMeta {
@@ -35,6 +38,7 @@ impl From<Post> for PostMeta {
             updated_at: value.updated_at,
             title: value.title,
             tags: value.tags,
+            summary: value.summary,
         }
     }
 }

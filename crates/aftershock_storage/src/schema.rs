@@ -10,6 +10,7 @@ diesel::table! {
         body -> Text,
         published -> Bool,
         uid -> Text,
+        summary -> Nullable<Text>,
     }
 }
 
@@ -30,4 +31,8 @@ diesel::table! {
 diesel::joinable!(contents_tags -> contents (content_id));
 diesel::joinable!(contents_tags -> tags (tag_id));
 
-diesel::allow_tables_to_appear_in_same_query!(contents, contents_tags, tags,);
+diesel::allow_tables_to_appear_in_same_query!(
+    contents,
+    contents_tags,
+    tags,
+);
