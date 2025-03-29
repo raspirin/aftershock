@@ -8,11 +8,11 @@ use schema::tags;
 use std::sync::LazyLock;
 
 pub mod error;
+pub mod migration;
 mod models;
 mod pool;
 mod schema;
 mod utils;
-pub mod migration;
 
 type Result<T> = std::result::Result<T, error::Error>;
 

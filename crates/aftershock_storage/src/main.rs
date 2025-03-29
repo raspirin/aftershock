@@ -1,7 +1,9 @@
 use std::env;
 
 use aftershock_storage::{
-    create_post, delete_post, delete_post_by_uid, get_all_posts, get_all_posts_meta, get_post, get_post_by_uid, get_published_posts, get_published_posts_meta, migration::run_migrations, update_post, update_post_by_uid
+    create_post, delete_post, delete_post_by_uid, get_all_posts, get_all_posts_meta, get_post,
+    get_post_by_uid, get_published_posts, get_published_posts_meta, migration::run_migrations,
+    update_post, update_post_by_uid,
 };
 use axum::{Router, routing::get};
 use dotenvy::dotenv;

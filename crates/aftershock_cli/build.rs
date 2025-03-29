@@ -1,7 +1,7 @@
 use std::env;
 
 use clap::{CommandFactory, ValueEnum};
-use clap_complete::{generate_to, Shell};
+use clap_complete::{Shell, generate_to};
 use dotenvy::dotenv;
 
 include!("src/command.rs");
@@ -10,9 +10,10 @@ fn main() -> Result<(), std::io::Error> {
     dotenv().ok();
     let outdir = match env::var_os("COMPLETION_OUTDIR") {
         None => match env::var_os("OUT_DIR") {
-        None => return Ok(()),
-        Some(outdir) => outdir,}
-        Some(outdir) => outdir
+            None => return Ok(()),
+            Some(outdir) => outdir,
+        },
+        Some(outdir) => outdir,
     };
     let mut cli = Cli::command();
 
