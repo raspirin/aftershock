@@ -141,6 +141,8 @@ impl<'a> From<&'a aftershock_bridge::NewPost> for NewContent<'a> {
 #[diesel(table_name = crate::schema::contents)]
 pub struct UpdateContent {
     #[serde(default)]
+    pub created_at: Option<i64>,
+    #[serde(default)]
     pub updated_at: Option<i64>,
     #[serde(default)]
     pub title: Option<String>,
@@ -153,6 +155,7 @@ pub struct UpdateContent {
 impl From<aftershock_bridge::UpdatePost> for UpdateContent {
     fn from(value: aftershock_bridge::UpdatePost) -> Self {
         Self {
+            created_at: None,
             updated_at: None,
             title: value.title,
             body: value.body,

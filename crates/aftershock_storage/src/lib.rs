@@ -24,10 +24,6 @@ pub use post::*;
 pub use private::*;
 
 mod private {
-    use diesel::sqlite::Sqlite;
-
-    use crate::models::ContentKind;
-
     use super::*;
 
     pub async fn get_post(Path(post_id): Path<i32>) -> Result<Json<Content>> {
@@ -185,6 +181,9 @@ pub async fn update_content_by_uid(
     let conn = &mut POOL.clone().get()?;
     let now = utils::now();
     updated_set.updated_at = Some(now);
+    if updated_set.published.is_some_and(|x| x) {
+        updated_set.created_at = Some(now);
+    }
 
     let content = diesel::update(contents::table.filter(contents::uid.eq(post_uid)))
         .set(updated_set)
