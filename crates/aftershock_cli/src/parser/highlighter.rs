@@ -1,7 +1,7 @@
 use pulldown_cmark::{CodeBlockKind, CowStr, Event, Tag, TagEnd};
-use syntect::html;
 use two_face::{
     re_exports::syntect::parsing::SyntaxSet,
+    re_exports::syntect::html,
     theme::{EmbeddedLazyThemeSet, EmbeddedThemeName},
 };
 
