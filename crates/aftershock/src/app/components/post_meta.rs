@@ -52,7 +52,7 @@ pub fn PostMeta(
 
     view! {
         <div class="flex flex-row items-center gap-4 w-full font-semibold">
-            <time datetime=machine_time class="pr-16 text-right w-fit flex-shrink-0">
+            <time datetime=machine_time class="md:pr-8 lg:pr-16 text-right w-fit flex-shrink-0">
                 {human_time}
             </time>
             <h2 class="flex-grow">
