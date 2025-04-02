@@ -6,7 +6,10 @@ use crate::{
 };
 
 #[component]
-pub fn PostMetaList(post_meta_list: Vec<aftershock_bridge::PostMeta>, with_summary: bool) -> impl IntoView {
+pub fn PostMetaList(
+    post_meta_list: Vec<aftershock_bridge::PostMeta>,
+    with_summary: bool,
+) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
         .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
@@ -19,7 +22,11 @@ pub fn PostMetaList(post_meta_list: Vec<aftershock_bridge::PostMeta>, with_summa
         <div class="flex flex-col gap-4 font-af-serif">
             {posts
                 .into_iter()
-                .map(|(year, x)| view! { <PostMetaSection year=year post_meta_list=x with_summary=with_summary /> })
+                .map(|(year, x)| {
+                    view! {
+                        <PostMetaSection year=year post_meta_list=x with_summary=with_summary />
+                    }
+                })
                 .collect_view()}
         </div>
     }
@@ -36,7 +43,9 @@ pub fn PostMetaSection(
             <h1 class="font-bold text-4xl">{year}</h1>
             {post_meta_list
                 .into_iter()
-                .map(|(time, meta)| view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> })
+                .map(|(time, meta)| {
+                    view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> }
+                })
                 .collect_view()}
         </section>
     }
@@ -54,27 +63,23 @@ pub fn PostMeta(
 
     view! {
         <div class="flex flex-col gap-1 sm:gap-2 md:gap-4">
-        <div class="flex flex-row items-center gap-4 w-full font-semibold">
-            <time datetime=machine_time class="sm:pr-8 md:pr-16 text-right w-fit flex-shrink-0">
-                {human_time}
-            </time>
-            <h2 class="flex-grow">
-                <a href=url>{post_meta.title}</a>
-            </h2>
-            <ul class="flex flex-row gap-1 ml-auto font-medium">
-                <TagListWithoutUl tags=post_meta.tags />
-            </ul>
-        </div>
-        <PostMetaSummary>{post_meta.summary}</PostMetaSummary>
+            <div class="flex flex-row items-center gap-4 w-full font-semibold">
+                <time datetime=machine_time class="sm:pr-8 md:pr-16 text-right w-fit flex-shrink-0">
+                    {human_time}
+                </time>
+                <h2 class="flex-grow">
+                    <a href=url>{post_meta.title}</a>
+                </h2>
+                <ul class="flex flex-row gap-1 ml-auto font-medium">
+                    <TagListWithoutUl tags=post_meta.tags />
+                </ul>
+            </div>
+            <PostMetaSummary>{post_meta.summary}</PostMetaSummary>
         </div>
     }
 }
 
 #[component]
 pub fn PostMetaSummary(children: Children) -> impl IntoView {
-    view! {
-        <div class="font-medium mx-1">
-            {children()}
-        </div>
-    }
+    view! { <div class="font-medium mx-1">{children()}</div> }
 }
