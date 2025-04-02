@@ -3,6 +3,8 @@ use std::sync::LazyLock;
 use ::reqwest::{IntoUrl, blocking::Response, header::CONTENT_TYPE};
 use reqwest::blocking as reqwest;
 
+use crate::parser::ParserOutput;
+
 static API_BASE: &str = "http://127.0.0.1:3030/api/v1";
 static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| reqwest::Client::new());
 
@@ -10,10 +12,16 @@ fn get<U: IntoUrl>(url: U) -> Result<Response, ::reqwest::Error> {
     CLIENT.get(url).send()
 }
 
+fn parse_from_file(path: &str) -> ParserOutput {
+    let input = std::fs::read_to_string(path).unwrap();
+    crate::parser::parse(&input)
+}
+
 pub fn add(kind: String, path: String) -> String {
     let url = format!("{API_BASE}/{kind}s");
-    let input = std::fs::read_to_string(&path).unwrap();
-    let output = crate::parser::parse(&input);
+    // let input = std::fs::read_to_string(&path).unwrap();
+    // let output = crate::parser::parse(&input);
+    let output = parse_from_file(&path);
     let new_post: aftershock_bridge::NewPost = output.into();
     if new_post.kind != kind {
         panic!("Kind doesn't match!")
@@ -63,6 +71,18 @@ pub fn delete(kind: String, id: String) -> String {
     serde_json::to_string_pretty(&body).unwrap()
 }
 
+fn send_update_request(url: &str, body: aftershock_bridge::UpdatePost) -> aftershock_bridge::Post {
+    let body = serde_json::to_string(&body).unwrap();
+    CLIENT
+        .put(url)
+        .header(CONTENT_TYPE, "application/json")
+        .body(body)
+        .send()
+        .unwrap()
+        .json::<aftershock_bridge::Post>()
+        .unwrap()
+}
+
 pub fn publish(kind: String, id: String) -> String {
     let url = format!("{API_BASE}/{kind}s/uid/{id}");
     let body = aftershock_bridge::UpdatePost {
@@ -70,14 +90,27 @@ pub fn publish(kind: String, id: String) -> String {
         body: None,
         published: Some(true),
     };
-    let body = serde_json::to_string(&body).unwrap();
-    let post = CLIENT
-        .put(url)
-        .header(CONTENT_TYPE, "application/json")
-        .body(body)
-        .send()
-        .unwrap()
-        .json::<aftershock_bridge::Post>()
-        .unwrap();
+    // let body = serde_json::to_string(&body).unwrap();
+    // let post = CLIENT
+    //     .put(url)
+    //     .header(CONTENT_TYPE, "application/json")
+    //     .body(body)
+    //     .send()
+    //     .unwrap()
+    //     .json::<aftershock_bridge::Post>()
+    //     .unwrap();
+    let post = send_update_request(&url, body);
+    serde_json::to_string_pretty(&post).unwrap()
+}
+
+pub fn update(kind: String, path: String, id: String) -> String {
+    let url = format!("{API_BASE}/{kind}s/uid/{id}");
+    let output = parse_from_file(&path);
+    let body = aftershock_bridge::UpdatePost {
+        title: Some(output.metadata.title),
+        body: Some(output.html),
+        published: None,
+    };
+    let post = send_update_request(&url, body);
     serde_json::to_string_pretty(&post).unwrap()
 }

@@ -12,7 +12,7 @@ fn main() {
         Commands::List => println!("{}", list(kind)),
         Commands::View { id } => println!("{}", view(kind, id)),
         Commands::Delete { id } => println!("{}", delete(kind, id)),
-        Commands::Update { path, id } => todo!(),
+        Commands::Update { path, id } => println!("{}", update(kind, path, id)),
         Commands::Publish { id } => println!("{}", publish(kind, id)),
     }
 }

@@ -1,9 +1,12 @@
 ---
-title = "Test Title"
+title = "Modified Test Title"
 kind = "post"
 tags = ["tag1", "tag2"]
 summary = "This is the summary"
 ---
+Modified Body.
+
+
 Lorem ipsum dolor sit amet, *consectetur* adipisicing elit, sed do eiusmod
 tempor incididunt ut **labore et dolore magna aliqua**. Ut enim ad minim veniam,
 quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
