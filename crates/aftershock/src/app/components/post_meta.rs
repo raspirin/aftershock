@@ -1,4 +1,4 @@
-use leptos::prelude::*;
+use leptos::{either::Either, prelude::*};
 
 use crate::{
     app::components::TagListWithoutUl,
@@ -74,7 +74,12 @@ pub fn PostMeta(
                     <TagListWithoutUl tags=post_meta.tags />
                 </ul>
             </div>
-            <PostMetaSummary>{post_meta.summary}</PostMetaSummary>
+            {match with_summary {
+                true => {
+                    Either::Right(view! { <PostMetaSummary>{post_meta.summary}</PostMetaSummary> })
+                }
+                false => Either::Left(view! {}),
+            }}
         </div>
     }
 }
