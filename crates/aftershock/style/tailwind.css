@@ -7,8 +7,8 @@ a:hover {
 }
 
 @theme {
-    --color-site-dark: #1c1c1c;
-    --color-site-bright: #f6f3f0;
+    --color-site-text: #1c1c1c;
+    --color-site-bg: #f6f3f0;
     --font-af-serif: 'Noto Serif', 'Noto Serif SC', var(--font-serif);
     --font-af-sans: 'Noto Sans', 'Noto Sans SC', var(--font-sans);
     --font-af-mono: 'JetBrains Mono', var(--font-mono);
