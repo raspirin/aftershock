@@ -64,6 +64,7 @@ pub fn App() -> impl IntoView {
                     <Route path=path!("") view=HomePage />
                     <Route path=path!("about") view=AboutPage />
                     <Route path=path!("posts/:uid") view=PostPage />
+                    // FIXME: what happened here?
                     <Route path=path!("tags/:tag") view=ArchivePage />
                 </ParentRoute>
             </Routes>
