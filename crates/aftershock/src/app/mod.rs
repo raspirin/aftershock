@@ -1,8 +1,8 @@
 use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
-    components::{Outlet, ParentRoute, Route, Router, Routes},
-    path, StaticSegment,
+    components::{Route, Router, Routes},
+    path,
 };
 use pages::{
     about_page::AboutPage, archive_page::ArchivePage, error_page::ErrorPage, home_page::HomePage,
@@ -51,22 +51,46 @@ pub fn App() -> impl IntoView {
                     </MainPage>
                 }
             }>
-                <ParentRoute
-                    path=StaticSegment("/")
-                    view=|| {
+                <Route
+                    path=path!("/")
+                    view=move || {
                         view! {
                             <MainPage>
-                                <Outlet />
+                                <HomePage />
                             </MainPage>
                         }
                     }
-                >
-                    <Route path=path!("") view=HomePage />
-                    <Route path=path!("about") view=AboutPage />
-                    <Route path=path!("posts/:uid") view=PostPage />
-                    // FIXME: what happened here?
-                    <Route path=path!("tags/:tag") view=ArchivePage />
-                </ParentRoute>
+                />
+                <Route
+                    path=path!("/about")
+                    view=move || {
+                        view! {
+                            <MainPage>
+                                <AboutPage />
+                            </MainPage>
+                        }
+                    }
+                />
+                <Route
+                    path=path!("/posts/:uid")
+                    view=move || {
+                        view! {
+                            <MainPage>
+                                <PostPage />
+                            </MainPage>
+                        }
+                    }
+                />
+                <Route
+                    path=path!("/tags/:tag")
+                    view=move || {
+                        view! {
+                            <MainPage>
+                                <ArchivePage />
+                            </MainPage>
+                        }
+                    }
+                />
             </Routes>
         </Router>
     }
