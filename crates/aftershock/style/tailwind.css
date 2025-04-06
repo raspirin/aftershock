@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital@0;1&family=Noto+Sans+SC:wght@500&family=Noto+Sans:wght@500&family=Noto+Serif+SC:wght@200..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital@0;1&family=Noto+Sans+SC:wght@500&family=Noto+Sans:wght@500&family=Noto+Serif+SC:wght@200..900&family=Noto+Serif+TC:wght@200..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -9,7 +9,7 @@ a:hover {
 @theme {
     --color-site-text: #1c1c1c;
     --color-site-bg: #f6f3f0;
-    --font-af-serif: 'Noto Serif', 'Noto Serif SC', var(--font-serif);
+    --font-af-serif: 'Noto Serif', 'Noto Serif SC', 'Noto Serif TC', var(--font-serif);
     --font-af-sans: 'Noto Sans', 'Noto Sans SC', var(--font-sans);
     --font-af-mono: 'JetBrains Mono', var(--font-mono);
 }
