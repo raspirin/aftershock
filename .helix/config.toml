@@ -1,0 +1,6 @@
+[editor.lsp]
+display-inlay-hints = true
+
+[editor.auto-save]
+focus-lost = true
+after-delay.enable = true
