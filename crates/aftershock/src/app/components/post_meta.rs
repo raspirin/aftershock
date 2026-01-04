@@ -20,14 +20,13 @@ pub fn PostMetaList(
 
     view! {
         <div class="flex flex-col gap-4 font-af-serif">
-            {posts
-                .into_iter()
-                .map(|(year, x)| {
-                    view! {
-                        <PostMetaSection year=year post_meta_list=x with_summary=with_summary />
-                    }
-                })
-                .collect_view()}
+            <For
+                each=move || posts.clone()
+                key=|(year, _)| *year
+                children=move |(year, x)| {
+                    view! { <PostMetaSection year=year post_meta_list=x with_summary=with_summary /> }.into_any()
+                }
+            />
         </div>
     }
 }
@@ -41,12 +40,13 @@ pub fn PostMetaSection(
     view! {
         <section class="flex flex-col gap-4">
             <h1 class="font-bold text-4xl">{year}</h1>
-            {post_meta_list
-                .into_iter()
-                .map(|(time, meta)| {
-                    view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> }
-                })
-                .collect_view()}
+            <For
+                each=move || post_meta_list.clone()
+                key=|(_, meta)| meta.uid.clone()
+                children=move |(time, meta)| {
+                    view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> }.into_any()
+                }
+            />
         </section>
     }
 }
