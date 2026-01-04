@@ -1,4 +1,5 @@
 use leptos::prelude::*;
+use leptos_meta::Title;
 
 use crate::app::components::{
     content::ContentSerif, AfTime, License, ProseContent, TagListWithoutUl,
@@ -7,6 +8,7 @@ use crate::app::components::{
 #[component]
 pub fn Post(post: aftershock_bridge::Post) -> impl IntoView {
     view! {
+        <Title text=format!("{} - {}", post.title, crate::consts::TITLE) />
         <article class="flex flex-col gap-0">
             <h1 class="font-af-serif text-3xl font-bold">{post.title}</h1>
             <div class="grid grid-flow-col gap-2 justify-start font-af-serif font-medium">
