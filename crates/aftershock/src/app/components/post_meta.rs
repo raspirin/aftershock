@@ -68,7 +68,7 @@ pub fn PostMeta(
                     {human_time}
                 </time>
                 <h2 class="flex-grow">
-                    <a href=url>{post_meta.title}</a>
+                    <a href=url.clone()>{post_meta.title}</a>
                 </h2>
                 <ul class="flex flex-shrink-0 flex-row gap-1 ml-auto font-medium">
                     <TagListWithoutUl tags=post_meta.tags />
@@ -76,7 +76,7 @@ pub fn PostMeta(
             </div>
             {match with_summary {
                 true => {
-                    Either::Right(view! { <PostMetaSummary>{post_meta.summary}</PostMetaSummary> })
+                    Either::Right(view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> })
                 }
                 false => Either::Left(view! {}),
             }}
@@ -85,6 +85,6 @@ pub fn PostMeta(
 }
 
 #[component]
-pub fn PostMetaSummary(children: Children) -> impl IntoView {
-    view! { <div class="font-medium mx-1">{children()}</div> }
+pub fn PostMetaSummary(url: String, children: Children) -> impl IntoView {
+    view! { <a href=url class="font-medium mx-1">{children()}</a> }
 }
