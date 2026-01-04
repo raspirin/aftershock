@@ -70,7 +70,7 @@ pub fn PostMeta(
                 <h2 class="flex-grow">
                     <a href=url>{post_meta.title}</a>
                 </h2>
-                <ul class="flex flex-row gap-1 ml-auto font-medium">
+                <ul class="flex flex-shrink-0 flex-row gap-1 ml-auto font-medium">
                     <TagListWithoutUl tags=post_meta.tags />
                 </ul>
             </div>
