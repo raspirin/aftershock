@@ -1,7 +1,7 @@
 ---
 title = "Modified Test Title"
 kind = "post"
-tags = ["tag1", "tag2"]
+tags = ["标签一", "标签二"]
 summary = "This is the summary"
 ---
 Modified Body.
