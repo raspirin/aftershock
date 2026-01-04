@@ -1,9 +1,8 @@
-use crate::utils::datetime::{CommonTime, UnixTimestampConverter};
 use leptos::{either::Either, prelude::*};
 
 use crate::{
     app::components::TagListWithoutUl,
-    utils::{datetime::StaticFormattedDateTime, group_by},
+    utils::{datetime::PreformattedDateTime, group_by},
 };
 
 #[component]
@@ -13,15 +12,9 @@ pub fn PostMetaList(
 ) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
-        .map(|post| {
-            (
-                // StaticFormattedDateTime::from_timestamp(post.created_at),
-                CommonTime::<StaticFormattedDateTime>::from_timestamp(post.created_at),
-                post,
-            )
-        })
+        .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
-    let posts = group_by(posts, |post| post.0.date_triplet.year, |post| post.clone());
+    let posts = group_by(posts, |post| post.0.year, |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
     posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
 
@@ -40,9 +33,9 @@ pub fn PostMetaList(
 }
 
 #[component]
-pub fn PostMetaSection<C: UnixTimestampConverter>(
+pub fn PostMetaSection(
     year: i32,
-    post_meta_list: Vec<(CommonTime<C>, aftershock_bridge::PostMeta)>,
+    post_meta_list: Vec<(PreformattedDateTime, aftershock_bridge::PostMeta)>,
     with_summary: bool,
 ) -> impl IntoView {
     view! {
@@ -59,17 +52,13 @@ pub fn PostMetaSection<C: UnixTimestampConverter>(
 }
 
 #[component]
-pub fn PostMeta<C: UnixTimestampConverter>(
-    time: CommonTime<C>,
+pub fn PostMeta(
+    time: PreformattedDateTime,
     post_meta: aftershock_bridge::PostMeta,
     with_summary: bool,
 ) -> impl IntoView {
     let url = format!("/posts/{}", post_meta.uid);
-    let human_time = format!(
-        "{} {}",
-        time.date_triplet.month_symbol().unwrap(),
-        time.date_triplet.day
-    );
+    let human_time = format!("{} {}", time.month_to_abbr(), time.day);
     let machine_time = time.machine_friendly;
 
     view! {
