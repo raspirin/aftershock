@@ -1,6 +1,5 @@
 use axum::{Json, extract::Path};
 use diesel::prelude::*;
-use models::ContentKind;
 use models::{Content, ContentTag, IntoPost, NewContent, NewTag, Tag, UpdateContent};
 use pool::{DbPool, get_connection_pool};
 use schema::contents;

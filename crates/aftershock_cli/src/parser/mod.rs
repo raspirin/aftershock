@@ -54,7 +54,7 @@ fn get_options() -> Options {
     ret
 }
 
-fn get_parser(text: &str) -> Parser {
+fn get_parser(text: &str) -> Parser<'_> {
     Parser::new_ext(text, *OPTIONS)
 }
 

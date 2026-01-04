@@ -78,7 +78,9 @@ pub fn PostMeta(
                 true => {
                     Either::Right(view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> })
                 }
-                false => Either::Left(view! {}),
+                false => {
+                    Either::Left(())
+                },
             }}
         </div>
     }

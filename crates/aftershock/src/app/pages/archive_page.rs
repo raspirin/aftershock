@@ -1,9 +1,6 @@
 use leptos::prelude::*;
 
-use crate::{
-    app::components::{ContentSerif, MessageBox},
-    MSG_ARCHIVE_PLACEHOLDER,
-};
+use crate::{app::components::MessageBox, MSG_ARCHIVE_PLACEHOLDER};
 
 // TODO: archive page
 #[component]

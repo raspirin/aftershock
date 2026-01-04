@@ -6,7 +6,7 @@ use reqwest::blocking as reqwest;
 use crate::parser::ParserOutput;
 
 static API_BASE: &str = "http://127.0.0.1:3030/api/v1";
-static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(|| reqwest::Client::new());
+static CLIENT: LazyLock<reqwest::Client> = LazyLock::new(reqwest::Client::new);
 
 fn get<U: IntoUrl>(url: U) -> Result<Response, ::reqwest::Error> {
     CLIENT.get(url).send()
