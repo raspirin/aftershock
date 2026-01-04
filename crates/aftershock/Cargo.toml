@@ -1,7 +1,7 @@
 [package]
 name = "aftershock"
-version = "0.2.1"
-edition = "2024"
+version = "0.2.2"
+edition = "2021"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
