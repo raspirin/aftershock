@@ -23,8 +23,9 @@ pub fn PostMetaList(
             {posts
                 .into_iter()
                 .map(|(year, x)| {
+                    let year = year.to_string();
                     view! {
-                        <PostMetaSection year=year post_meta_list=x with_summary=with_summary />
+                        <PostMetaSection section_title=year post_meta_list=x with_summary=with_summary />
                     }
                 })
                 .collect_view()}
@@ -34,13 +35,13 @@ pub fn PostMetaList(
 
 #[component]
 pub fn PostMetaSection(
-    year: i32,
+    section_title: String,
     post_meta_list: Vec<(PreformattedDateTime, aftershock_bridge::PostMeta)>,
     with_summary: bool,
 ) -> impl IntoView {
     view! {
         <section class="flex flex-col gap-4">
-            <h1 class="font-bold text-4xl">{year}</h1>
+            <h1 class="font-bold text-4xl">{section_title}</h1>
             {post_meta_list
                 .into_iter()
                 .map(|(time, meta)| {
