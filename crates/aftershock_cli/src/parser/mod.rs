@@ -63,13 +63,13 @@ where
     I: Iterator<Item = &'e Event<'e>>,
 {
     let mut inside_metadata = false;
-    let mut metadata = None;
+    let mut metadata = String::new();
     for event in events {
         match event {
             Event::Start(Tag::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
                 inside_metadata = true
             }
-            Event::Text(m) if inside_metadata => metadata = Some(m.clone()),
+            Event::Text(m) if inside_metadata => metadata = format!("{metadata}{}", m.clone()),
             Event::End(TagEnd::MetadataBlock(MetadataBlockKind::YamlStyle)) => {
                 inside_metadata = false
             }
@@ -77,7 +77,7 @@ where
         }
     }
 
-    toml::from_str::<ParserOutputMetadata>(&metadata.unwrap()).unwrap()
+    toml::from_str::<ParserOutputMetadata>(&metadata).unwrap()
 }
 
 pub fn parse(text: &str) -> ParserOutput {
