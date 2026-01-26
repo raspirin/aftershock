@@ -71,7 +71,7 @@ impl WorkerBuilder {
         Self {
             target_kind: None,
             publish_state: Some(PublishState::All),
-            filter: None,
+            filter: Some(Filter::All),
             action: None,
         }
     }
@@ -194,11 +194,6 @@ impl WorkerBuilder {
 
     pub fn page(mut self) -> Self {
         self.target_kind = Some(TargetKind::Page);
-        self
-    }
-
-    pub fn all(mut self) -> Self {
-        self.filter = Some(Filter::All);
         self
     }
 
