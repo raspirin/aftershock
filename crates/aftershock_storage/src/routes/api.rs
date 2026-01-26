@@ -217,3 +217,109 @@ pub async fn delete_page_by_uid(Path(page_uid): Path<String>) -> Result<Json<Pos
         None => Err(crate::error::Error::NotFound("Content not found".into())),
     }
 }
+
+// Posts by tag handlers
+pub async fn get_published_posts_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<Post>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .post()
+        .published_only()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_published_posts_meta_by_tag(
+    Path(tag): Path<String>,
+) -> Result<Json<Vec<PostMeta>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .post()
+        .published_only()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_all_posts_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<Post>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .post()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_all_posts_meta_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<PostMeta>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .post()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+// Pages by tag handlers
+pub async fn get_published_pages_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<Post>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .page()
+        .published_only()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_published_pages_meta_by_tag(
+    Path(tag): Path<String>,
+) -> Result<Json<Vec<PostMeta>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .page()
+        .published_only()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_all_pages_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<Post>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .page()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}
+
+pub async fn get_all_pages_meta_by_tag(Path(tag): Path<String>) -> Result<Json<Vec<PostMeta>>> {
+    let conn = &mut POOL.clone().get()?;
+    let ret = Worker::builder()
+        .page()
+        .by_tag(tag)
+        .query()
+        .build(conn)
+        .ok_or_else(|| crate::error::Error::NotFound("Failed to build worker".into()))?
+        .load()?;
+    Ok(Json(ret))
+}

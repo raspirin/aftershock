@@ -27,7 +27,7 @@ pub enum Filter {
     All,
     Id(String),
     Name(String),
-    Tag,
+    Tag(String),
 }
 
 pub enum Action {
@@ -207,8 +207,8 @@ impl WorkerBuilder {
         self
     }
 
-    pub fn by_tag(mut self) -> Self {
-        self.filter = Some(Filter::Tag);
+    pub fn by_tag(mut self, tag: String) -> Self {
+        self.filter = Some(Filter::Tag(tag));
         self
     }
 
@@ -262,7 +262,14 @@ impl WorkerBuilder {
             Filter::All => Box::new(schema::contents::title.is_not_null()),
             Filter::Id(id) => Box::new(schema::contents::uid.eq(id)),
             Filter::Name(name) => Box::new(schema::contents::title.eq(name)),
-            Filter::Tag => unimplemented!("Filter by tag is not supported yet."),
+            Filter::Tag(tag) => Box::new(
+                schema::contents::id.eq_any(
+                    schema::contents_tags::table
+                        .inner_join(schema::tags::table)
+                        .filter(schema::tags::tag.eq(tag))
+                        .select(schema::contents_tags::content_id),
+                ),
+            ),
         }
     }
 

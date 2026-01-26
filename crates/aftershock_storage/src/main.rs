@@ -3,10 +3,13 @@ use std::env;
 use aftershock_storage::{
     migration::run_migrations,
     routes::{
-        create_content, delete_page_by_uid, delete_post_by_uid, get_all_pages, get_all_pages_meta,
-        get_all_posts, get_all_posts_meta, get_page_by_uid, get_post_by_uid, get_published_pages,
-        get_published_pages_meta, get_published_posts, get_published_posts_meta,
-        update_page_by_uid, update_post_by_uid,
+        create_content, delete_page_by_uid, delete_post_by_uid, get_all_pages,
+        get_all_pages_by_tag, get_all_pages_meta, get_all_pages_meta_by_tag, get_all_posts,
+        get_all_posts_by_tag, get_all_posts_meta, get_all_posts_meta_by_tag, get_page_by_uid,
+        get_post_by_uid, get_published_pages, get_published_pages_by_tag, get_published_pages_meta,
+        get_published_pages_meta_by_tag, get_published_posts, get_published_posts_by_tag,
+        get_published_posts_meta, get_published_posts_meta_by_tag, update_page_by_uid,
+        update_post_by_uid,
     },
 };
 use axum::{Router, routing::get};
@@ -33,6 +36,16 @@ async fn main() {
                 .put(update_post_by_uid)
                 .delete(delete_post_by_uid),
         )
+        .route("/api/v1/posts/tag/{tag}", get(get_published_posts_by_tag))
+        .route("/api/v1/posts/tag/{tag}/all", get(get_all_posts_by_tag))
+        .route(
+            "/api/v1/posts/tag/{tag}/meta",
+            get(get_published_posts_meta_by_tag),
+        )
+        .route(
+            "/api/v1/posts/tag/{tag}/all-meta",
+            get(get_all_posts_meta_by_tag),
+        )
         .route(
             "/api/v1/pages",
             get(get_published_pages).post(create_content),
@@ -45,6 +58,16 @@ async fn main() {
             get(get_page_by_uid)
                 .put(update_page_by_uid)
                 .delete(delete_page_by_uid),
+        )
+        .route("/api/v1/pages/tag/{tag}", get(get_published_pages_by_tag))
+        .route("/api/v1/pages/tag/{tag}/all", get(get_all_pages_by_tag))
+        .route(
+            "/api/v1/pages/tag/{tag}/meta",
+            get(get_published_pages_meta_by_tag),
+        )
+        .route(
+            "/api/v1/pages/tag/{tag}/all-meta",
+            get(get_all_pages_meta_by_tag),
         );
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
