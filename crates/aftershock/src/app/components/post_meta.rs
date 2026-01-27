@@ -6,7 +6,7 @@ use crate::{
 };
 
 #[component]
-pub fn PostMetaList(
+pub fn PostMetaListGroupByTime(
     post_meta_list: Vec<aftershock_bridge::PostMeta>,
     with_summary: bool,
 ) -> impl IntoView {
@@ -29,6 +29,24 @@ pub fn PostMetaList(
                     }
                 })
                 .collect_view()}
+        </div>
+    }
+}
+
+#[component]
+pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, primary_tag: String) -> impl IntoView {
+    let posts = post_meta_list
+        .into_iter()
+        .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
+        .collect::<Vec<_>>();
+    let posts = group_by(posts, |post| post.0.year, |post| post.clone());
+    let mut posts = posts.into_iter().collect::<Vec<_>>();
+    posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
+    let posts = posts.into_iter().map(|(_, x)| x).flatten().collect();
+
+    view! {
+        <div class="flex flex-col gap-4 font-af-serif">
+            <PostMetaSection section_title=primary_tag post_meta_list=posts with_summary=false />
         </div>
     }
 }

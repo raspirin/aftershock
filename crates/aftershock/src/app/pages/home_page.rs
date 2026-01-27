@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-use crate::app::components::{MessageBox, PostMetaList};
+use crate::app::components::{MessageBox, PostMetaListGroupByTime};
 use crate::app::server::get_published_posts_meta;
 use crate::{MSG_ARCHIVE_PLACEHOLDER, MSG_LOAD_DATA_FAILURE};
 
@@ -13,7 +13,7 @@ pub fn HomePage() -> impl IntoView {
             {match data {
                 Ok(s) if !s.is_empty() => {
                     let posts = s.clone();
-                    view! { <PostMetaList post_meta_list=posts with_summary=true /> }.into_any()
+                    view! { <PostMetaListGroupByTime post_meta_list=posts with_summary=true /> }.into_any()
                 }
                 Ok(_) => {
                     *set_msg.write() = MSG_ARCHIVE_PLACEHOLDER.into();
