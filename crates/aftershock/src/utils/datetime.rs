@@ -5,7 +5,7 @@ pub struct PreformattedDateTime {
     pub year: i32,
     pub month: u32,
     pub day: u32,
-    pub orig: i64,
+    // pub orig: i64,
     pub human_readable: String,
     pub machine_friendly: String,
 }
@@ -25,7 +25,7 @@ impl PreformattedDateTime {
             year,
             month,
             day,
-            orig: timestamp,
+            // orig: timestamp,
             human_readable,
             machine_friendly,
         }
