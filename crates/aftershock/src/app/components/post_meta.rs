@@ -2,7 +2,7 @@ use leptos::{either::Either, prelude::*};
 
 use crate::{
     app::components::TagListWithoutUl,
-    utils::{datetime::PreformattedDateTime, group_by},
+    utils::{datetime::{PreformattedDateTime, DateTime}, group_by},
 };
 
 #[component]
@@ -14,7 +14,7 @@ pub fn PostMetaListGroupByTime(
         .into_iter()
         .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
-    let posts = group_by(posts, |post| post.0.year, |post| post.clone());
+    let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
     posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
 
@@ -39,7 +39,7 @@ pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, 
         .into_iter()
         .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
-    let posts = group_by(posts, |post| post.0.year, |post| post.clone());
+    let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
     posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
     let posts = posts.into_iter().map(|(_, x)| x).flatten().collect();
@@ -77,8 +77,8 @@ pub fn PostMeta(
     with_summary: bool,
 ) -> impl IntoView {
     let url = format!("/posts/{}", post_meta.uid);
-    let human_time = format!("{} {}", time.month_to_abbr(), time.day);
-    let machine_time = time.machine_friendly;
+    let human_time = format!("{} {}", time.month_to_abbr(), time.day());
+    let machine_time = time.machine_friendly().to_owned();
 
     view! {
         <div class="flex flex-col gap-1 sm:gap-2 md:gap-4">
