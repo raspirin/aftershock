@@ -25,13 +25,13 @@ enum LoadingState {
 
 #[component]
 pub fn ArchivePage() -> impl IntoView {
-    let _params = use_params::<TagParams>();
+    let params = use_params::<TagParams>();
     let (msg, _set_msg) = signal(String::from(MSG_ARCHIVE_PLACEHOLDER));
     let (data, set_data) = signal::<Option<TagData>>(None);
     let (loading_state, set_loading_state) = signal(LoadingState::Initial);
 
     Effect::new(move |_| {
-        let tag_opt = _params.read().as_ref().ok().and_then(|p| p.tag.clone());
+        let tag_opt = params.read().as_ref().ok().and_then(|p| p.tag.clone());
         
         match tag_opt {
             None => {
