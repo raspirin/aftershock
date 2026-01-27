@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital@0;1&family=Noto+Sans+SC:wght@500&family=Noto+Sans:wght@500&family=Noto+Serif+SC:wght@200..900&family=Noto+Serif+TC:wght@200..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 
 a:hover {
     text-decoration: underline;
@@ -12,4 +11,24 @@ a:hover {
     --font-af-serif: 'Noto Serif', 'Noto Serif SC', 'Noto Serif TC', var(--font-serif);
     --font-af-sans: 'Noto Sans', 'Noto Sans SC', var(--font-sans);
     --font-af-mono: 'JetBrains Mono', var(--font-mono);
+    
+    /* Migrated font families from tailwind.config.js */
+    --font-sans: [
+      'system-ui',
+      '-apple-system',
+      'Segoe UI',
+      'Roboto',
+      'Helvetica Neue',
+      'Arial',
+      'Noto Sans SC',
+      'sans-serif'
+    ];
+    --font-serif: [
+      'Merriweather',
+      'Georgia',
+      'Cambria',
+      'Times New Roman',
+      'Noto Serif SC',
+      'serif'
+    ];
 }
