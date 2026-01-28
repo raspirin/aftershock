@@ -7,6 +7,7 @@ pub trait DateTime {
     fn year(&self) -> i32;
     fn month(&self) -> u32;
     fn day(&self) -> u32;
+    fn orig(&self) -> i64;
 
     fn human_readable(&self) -> &str;
     fn machine_friendly(&self) -> &str;
@@ -45,7 +46,7 @@ pub struct PreformattedDateTime {
     year: i32,
     month: u32,
     day: u32,
-    // pub orig: i64,
+    pub orig: i64,
     human_readable: String,
     machine_friendly: String,
 }
@@ -66,7 +67,7 @@ impl DateTime for PreformattedDateTime {
             year,
             month,
             day,
-            // orig: timestamp,
+            orig: timestamp,
             human_readable,
             machine_friendly,
         }
@@ -83,6 +84,10 @@ impl DateTime for PreformattedDateTime {
     fn day(&self) -> u32 {
         self.day
     }
+
+    fn orig(&self) -> i64 {
+        self.orig
+    }
     
     fn human_readable(&self) -> &str {
         &self.human_readable
@@ -93,12 +98,37 @@ impl DateTime for PreformattedDateTime {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
+impl PartialEq for PreformattedDateTime {
+    fn eq(&self, other: &Self) -> bool {
+        self.orig == other.orig
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl Eq for PreformattedDateTime {}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl PartialOrd for PreformattedDateTime {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+impl Ord for PreformattedDateTime {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.orig.cmp(&other.orig)
+    }
+}
+
 #[cfg(target_arch = "wasm32")]
 #[derive(Clone, Debug)]
 pub struct UserLocalDateTime {
     year: i32,
     month: u32,
     day: u32,
+    orig: i64,
     human_readable: String,
     machine_friendly: String,
 }
@@ -136,6 +166,7 @@ impl DateTime for UserLocalDateTime {
             year,
             month,
             day,
+            orig: timestamp,
             human_readable,
             machine_friendly,
         }
@@ -152,6 +183,10 @@ impl DateTime for UserLocalDateTime {
     fn day(&self) -> u32 {
         self.day
     }
+
+    fn orig(&self) -> i64 {
+        self.orig
+    }
     
     fn human_readable(&self) -> &str {
         &self.human_readable
@@ -159,5 +194,29 @@ impl DateTime for UserLocalDateTime {
     
     fn machine_friendly(&self) -> &str {
         &self.machine_friendly
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl PartialEq for UserLocalDateTime {
+    fn eq(&self, other: &Self) -> bool {
+        self.orig == other.orig
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl Eq for UserLocalDateTime {}
+
+#[cfg(target_arch = "wasm32")]
+impl PartialOrd for UserLocalDateTime {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+#[cfg(target_arch = "wasm32")]
+impl Ord for UserLocalDateTime {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.orig.cmp(&other.orig)
     }
 }
