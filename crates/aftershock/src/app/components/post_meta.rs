@@ -2,7 +2,10 @@ use leptos::{either::Either, prelude::*};
 
 use crate::{
     app::components::TagListWithoutUl,
-    utils::{datetime::{AppDateTime, DateTime}, group_by},
+    utils::{
+        datetime::{AppDateTime, DateTime},
+        group_by,
+    },
 };
 
 #[component]
@@ -34,7 +37,10 @@ pub fn PostMetaListGroupByTime(
 }
 
 #[component]
-pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, primary_tag: String) -> impl IntoView {
+pub fn PostMetaListGroupByTag(
+    post_meta_list: Vec<aftershock_bridge::PostMeta>,
+    primary_tag: String,
+) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
         .map(|post| (AppDateTime::from_timestamp(post.created_at), post))
@@ -42,7 +48,7 @@ pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, 
     let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
     posts.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
-    let posts = posts.into_iter().map(|(_, x)| x).flatten().collect();
+    let posts = posts.into_iter().flat_map(|(_, x)| x).collect();
 
     view! {
         <div class="flex flex-col gap-4 font-af-serif">

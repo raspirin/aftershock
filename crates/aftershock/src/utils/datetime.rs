@@ -76,11 +76,11 @@ impl DateTime for PreformattedDateTime {
     fn year(&self) -> i32 {
         self.year
     }
-    
+
     fn month(&self) -> u32 {
         self.month
     }
-    
+
     fn day(&self) -> u32 {
         self.day
     }
@@ -88,11 +88,11 @@ impl DateTime for PreformattedDateTime {
     fn orig(&self) -> i64 {
         self.orig
     }
-    
+
     fn human_readable(&self) -> &str {
         &self.human_readable
     }
-    
+
     fn machine_friendly(&self) -> &str {
         &self.machine_friendly
     }
@@ -134,9 +134,7 @@ pub struct UserLocalDateTime {
 }
 
 #[cfg(target_arch = "wasm32")]
-impl UserLocalDateTime {
-    // Note: new() constructor removed as it's redundant with from_timestamp()
-}
+impl UserLocalDateTime {}
 
 #[cfg(target_arch = "wasm32")]
 impl DateTime for UserLocalDateTime {
@@ -145,23 +143,18 @@ impl DateTime for UserLocalDateTime {
         // Create date from timestamp (milliseconds)
         let timestamp_ms = (timestamp * 1000) as f64; // Convert seconds to milliseconds
         let js_date = js_sys::Date::new(&timestamp_ms.into());
-        
+
         let year = js_date.get_full_year() as i32;
         // JavaScript getMonth() returns 0-11, so we add 1
         let month = (js_date.get_month() + 1) as u32;
         let day = js_date.get_date() as u32;
-        
+
         // Format human readable: YYYY-MM-DD
-        let human_readable = format!(
-            "{:04}-{:02}-{:02}",
-            year,
-            month,
-            day
-        );
-        
+        let human_readable = format!("{:04}-{:02}-{:02}", year, month, day);
+
         // Format machine friendly: ISO 8601 string
         let machine_friendly = js_date.to_iso_string().as_string().unwrap_or_default();
-        
+
         UserLocalDateTime {
             year,
             month,
@@ -175,11 +168,11 @@ impl DateTime for UserLocalDateTime {
     fn year(&self) -> i32 {
         self.year
     }
-    
+
     fn month(&self) -> u32 {
         self.month
     }
-    
+
     fn day(&self) -> u32 {
         self.day
     }
@@ -187,11 +180,11 @@ impl DateTime for UserLocalDateTime {
     fn orig(&self) -> i64 {
         self.orig
     }
-    
+
     fn human_readable(&self) -> &str {
         &self.human_readable
     }
-    
+
     fn machine_friendly(&self) -> &str {
         &self.machine_friendly
     }

@@ -66,6 +66,12 @@ pub struct WorkerBuilder {
     action: Option<Action>,
 }
 
+impl Default for WorkerBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl WorkerBuilder {
     pub fn new() -> WorkerBuilder {
         Self {
@@ -309,7 +315,7 @@ impl WorkerBuilder {
     ) -> Vec<aftershock_bridge::Post> {
         contents
             .into_iter()
-            .zip(tags.into_iter())
+            .zip(tags)
             .map(|x| x.into_post())
             .collect()
     }

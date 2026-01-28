@@ -2,7 +2,13 @@ use leptos::prelude::*;
 use leptos::task::spawn_local;
 use leptos_router::{hooks::use_params, params::Params};
 
-use crate::{MSG_ARCHIVE_PLACEHOLDER, app::{components::{MessageBox, PostMetaListGroupByTag}, server::get_posts_meta_by_tag}};
+use crate::{
+    app::{
+        components::{MessageBox, PostMetaListGroupByTag},
+        server::get_posts_meta_by_tag,
+    },
+    MSG_ARCHIVE_PLACEHOLDER,
+};
 
 #[derive(Params, PartialEq)]
 struct TagParams {
@@ -32,7 +38,7 @@ pub fn ArchivePage() -> impl IntoView {
 
     Effect::new(move |_| {
         let tag_opt = params.read().as_ref().ok().and_then(|p| p.tag.clone());
-        
+
         match tag_opt {
             None => {
                 set_loading_state.set(LoadingState::Error);
@@ -45,7 +51,7 @@ pub fn ArchivePage() -> impl IntoView {
             Some(tag) => {
                 let tag_clone = tag.clone();
                 set_loading_state.set(LoadingState::Loading);
-                
+
                 spawn_local(async move {
                     match get_posts_meta_by_tag(tag_clone.clone()).await {
                         Ok(posts) => {
