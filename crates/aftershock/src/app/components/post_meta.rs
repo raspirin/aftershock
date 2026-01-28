@@ -16,7 +16,7 @@ pub fn PostMetaListGroupByTime(
         .collect::<Vec<_>>();
     let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
-    posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
+    posts.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
 
     view! {
         <div class="flex flex-col gap-4 font-af-serif">
@@ -41,7 +41,7 @@ pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, 
         .collect::<Vec<_>>();
     let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
-    posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
+    posts.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
     let posts = posts.into_iter().map(|(_, x)| x).flatten().collect();
 
     view! {
