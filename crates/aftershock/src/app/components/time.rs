@@ -1,10 +1,10 @@
 use leptos::prelude::*;
 
-use crate::utils::datetime::{PreformattedDateTime, DateTime};
+use crate::utils::datetime::{AppDateTime, DateTime};
 
 #[component]
 pub fn AfTime(timestamp: i64) -> impl IntoView {
-    let time = PreformattedDateTime::from_timestamp(timestamp);
+    let time = AppDateTime::from_timestamp(timestamp);
     view! {
         <time datetime=time.machine_friendly().to_owned() class="max-w-fit">
             {time.human_readable().to_owned()}

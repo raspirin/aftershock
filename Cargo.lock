@@ -16,6 +16,7 @@ dependencies = [
  "axum",
  "chrono",
  "console_error_panic_hook",
+ "js-sys",
  "leptos",
  "leptos_axum",
  "leptos_meta",

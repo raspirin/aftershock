@@ -2,7 +2,7 @@ use leptos::{either::Either, prelude::*};
 
 use crate::{
     app::components::TagListWithoutUl,
-    utils::{datetime::{PreformattedDateTime, DateTime}, group_by},
+    utils::{datetime::{AppDateTime, DateTime}, group_by},
 };
 
 #[component]
@@ -12,7 +12,7 @@ pub fn PostMetaListGroupByTime(
 ) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
-        .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
+        .map(|post| (AppDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
     let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
@@ -37,7 +37,7 @@ pub fn PostMetaListGroupByTime(
 pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, primary_tag: String) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
-        .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
+        .map(|post| (AppDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
     let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
@@ -54,7 +54,7 @@ pub fn PostMetaListGroupByTag(post_meta_list: Vec<aftershock_bridge::PostMeta>, 
 #[component]
 pub fn PostMetaSection(
     section_title: String,
-    post_meta_list: Vec<(PreformattedDateTime, aftershock_bridge::PostMeta)>,
+    post_meta_list: Vec<(AppDateTime, aftershock_bridge::PostMeta)>,
     with_summary: bool,
 ) -> impl IntoView {
     view! {
@@ -72,7 +72,7 @@ pub fn PostMetaSection(
 
 #[component]
 pub fn PostMeta(
-    time: PreformattedDateTime,
+    time: AppDateTime,
     post_meta: aftershock_bridge::PostMeta,
     with_summary: bool,
 ) -> impl IntoView {

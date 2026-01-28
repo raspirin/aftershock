@@ -15,13 +15,21 @@ axum = { workspace = true, optional = true }
 console_error_panic_hook = { version = "0.1", optional = true }
 tokio = { workspace = true, optional = true }
 wasm-bindgen = { version = "=0.2.100", optional = true }
+js-sys = { version = "0.3", optional = true }
 reqwest = { workspace = true, optional = true }
 aftershock_bridge = { path = "../aftershock_bridge" }
-chrono = "0.4.40"
 thiserror.workspace = true
 
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+chrono = "0.4.40"
+
 [features]
-hydrate = ["leptos/hydrate", "dep:console_error_panic_hook", "dep:wasm-bindgen"]
+hydrate = [
+    "leptos/hydrate",
+    "dep:console_error_panic_hook",
+    "dep:wasm-bindgen",
+    "dep:js-sys",
+]
 ssr = [
     "dep:axum",
     "dep:tokio",
