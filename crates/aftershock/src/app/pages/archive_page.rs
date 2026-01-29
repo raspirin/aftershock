@@ -75,14 +75,16 @@ pub fn ArchivePage() -> impl IntoView {
         {move || {
             match (loading_state.get(), data.get()) {
                 (LoadingState::Success, Some(ref data)) => {
-                    view! { <PostMetaListGroupByTag post_meta_list=data.posts.clone() primary_tag=data.tag.clone() /> }.into_any()
+                    view! {
+                        <PostMetaListGroupByTag
+                            post_meta_list=data.posts.clone()
+                            primary_tag=data.tag.clone()
+                        />
+                    }
+                        .into_any()
                 }
-                (LoadingState::Error, None) => {
-                    view! { <MessageBox msg=msg /> }.into_any()
-                }
-                _ => {
-                    view! { <div></div> }.into_any()
-                }
+                (LoadingState::Error, None) => view! { <MessageBox msg=msg /> }.into_any(),
+                _ => view! { <div></div> }.into_any(),
             }
         }}
     }

@@ -13,7 +13,8 @@ pub fn HomePage() -> impl IntoView {
             {match data {
                 Ok(s) if !s.is_empty() => {
                     let posts = s.clone();
-                    view! { <PostMetaListGroupByTime post_meta_list=posts with_summary=true /> }.into_any()
+                    view! { <PostMetaListGroupByTime post_meta_list=posts with_summary=true /> }
+                        .into_any()
                 }
                 Ok(_) => {
                     *set_msg.write() = MSG_ARCHIVE_PLACEHOLDER.into();

@@ -28,7 +28,11 @@ pub fn PostMetaListGroupByTime(
                 .map(|(year, x)| {
                     let year = year.to_string();
                     view! {
-                        <PostMetaSection section_title=year post_meta_list=x with_summary=with_summary />
+                        <PostMetaSection
+                            section_title=year
+                            post_meta_list=x
+                            with_summary=with_summary
+                        />
                     }
                 })
                 .collect_view()}
@@ -101,11 +105,11 @@ pub fn PostMeta(
             </div>
             {match with_summary {
                 true => {
-                    Either::Right(view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> })
+                    Either::Right(
+                        view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> },
+                    )
                 }
-                false => {
-                    Either::Left(())
-                },
+                false => Either::Left(()),
             }}
         </div>
     }
@@ -113,5 +117,9 @@ pub fn PostMeta(
 
 #[component]
 pub fn PostMetaSummary(url: String, children: Children) -> impl IntoView {
-    view! { <a href=url class="font-medium mx-1">{children()}</a> }
+    view! {
+        <a href=url class="font-medium mx-1">
+            {children()}
+        </a>
+    }
 }
