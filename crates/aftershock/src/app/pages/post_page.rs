@@ -9,7 +9,7 @@ use leptos::prelude::*;
 use leptos_router::{
     hooks::use_params,
     lazy_route,
-    params::{Params, ParamsError},
+    params::Params,
     LazyRoute,
 };
 
@@ -19,7 +19,6 @@ struct PostParams {
 }
 
 pub struct PostPageRoute {
-    params: Memo<Result<PostParams, ParamsError>>,
     data: Resource<Result<aftershock_bridge::Post, ()>>,
     msg: ReadSignal<String>,
 }
@@ -41,11 +40,11 @@ impl LazyRoute for PostPageRoute {
             },
         );
 
-        Self { params, data, msg }
+        Self { data, msg }
     }
 
     fn view(this: Self) -> AnyView {
-        let PostPageRoute { params, data, msg } = this;
+        let PostPageRoute { data, msg, .. } = this;
 
         view! {
             <Suspense>

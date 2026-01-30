@@ -5,7 +5,8 @@ use leptos_router::{
     path, Lazy,
 };
 use pages::{
-    about_page::AboutPage, error_page::ErrorPage, home_page::HomePage, main_page::MainPage,
+    about_page::AboutPageRoute, error_page::ErrorPage, home_page::HomePageRoute,
+    main_page::MainPage,
 };
 
 use crate::{
@@ -50,18 +51,8 @@ pub fn App() -> impl IntoView {
                 <Routes fallback=move || {
                     view! { <ErrorPage msg=error_msg /> }
                 }>
-                    <Route
-                        path=path!("/")
-                        view=move || {
-                            view! { <HomePage /> }
-                        }
-                    />
-                    <Route
-                        path=path!("/about")
-                        view=move || {
-                            view! { <AboutPage /> }
-                        }
-                    />
+                    <Route path=path!("/") view={Lazy::<HomePageRoute>::new()} />
+                    <Route path=path!("/about") view={Lazy::<AboutPageRoute>::new()} />
                     <Route path=path!("/posts/:uid") view={Lazy::<PostPageRoute>::new()} />
                     <Route path=path!("/tags/:tag") view={Lazy::<ArchivePageRoute>::new()} />
                 </Routes>
