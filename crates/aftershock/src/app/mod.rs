@@ -2,14 +2,14 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
     components::{Route, Router, Routes},
-    path,
+    path, Lazy,
 };
 use pages::{
-    about_page::AboutPage, archive_page::ArchivePage, error_page::ErrorPage, home_page::HomePage,
-    main_page::MainPage, post_page::PostPage,
+    about_page::AboutPage, error_page::ErrorPage, home_page::HomePage, main_page::MainPage,
+    post_page::PostPage,
 };
 
-use crate::{MSG_DATA_NOT_FOUND, TITLE};
+use crate::{app::pages::archive_page::ArchivePageRoute, MSG_DATA_NOT_FOUND, TITLE};
 
 mod components;
 mod pages;
@@ -66,12 +66,7 @@ pub fn App() -> impl IntoView {
                             view! { <PostPage /> }
                         }
                     />
-                    <Route
-                        path=path!("/tags/:tag")
-                        view=move || {
-                            view! { <ArchivePage /> }
-                        }
-                    />
+                    <Route path=path!("/tags/:tag") view={Lazy::<ArchivePageRoute>::new()} />
                 </Routes>
             </MainPage>
         </Router>
