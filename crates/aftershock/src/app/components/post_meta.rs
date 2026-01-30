@@ -1,4 +1,5 @@
 use leptos::{either::Either, prelude::*};
+use leptos_router::components::A;
 
 use crate::{
     app::components::TagListWithoutUl,
@@ -97,7 +98,7 @@ pub fn PostMeta(
                     {human_time}
                 </time>
                 <h2 class="flex-grow">
-                    <a href=url.clone()>{post_meta.title}</a>
+                    <A href=url.clone()>{post_meta.title}</A>
                 </h2>
                 <ul class="flex flex-shrink-0 flex-row gap-1 ml-auto font-medium">
                     <TagListWithoutUl tags=post_meta.tags />
@@ -118,8 +119,8 @@ pub fn PostMeta(
 #[component]
 pub fn PostMetaSummary(url: String, children: Children) -> impl IntoView {
     view! {
-        <a href=url class="font-medium mx-1">
+        <A href=url attr:class="font-medium mx-1">
             {children()}
-        </a>
+        </A>
     }
 }

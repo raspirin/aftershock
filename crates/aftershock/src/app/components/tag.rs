@@ -1,9 +1,10 @@
 use leptos::prelude::*;
+use leptos_router::components::A;
 
 #[component]
 pub fn Tag(tag: String) -> impl IntoView {
     let url = format!("/tags/{tag}");
-    view! { <a href=url>#{tag}</a> }
+    view! { <A href=url>#{tag}</A> }
 }
 
 #[component]
