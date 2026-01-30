@@ -16,12 +16,15 @@ mod pages;
 mod server;
 
 pub fn shell(options: LeptosOptions) -> impl IntoView {
+    let aftershock_version = env!("CARGO_PKG_VERSION");
+
     view! {
         <!DOCTYPE html>
         <html lang="zh-CN">
             <head>
                 <meta charset="utf-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <meta name="generator" content=format!("aftershock v{aftershock_version}")/>
                 <AutoReload options=options.clone() />
                 <HydrationScripts options />
                 <MetaTags />
