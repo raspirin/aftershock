@@ -44,54 +44,36 @@ pub fn App() -> impl IntoView {
         <Title text=TITLE />
 
         <Router>
-            <Routes fallback=move || {
-                view! {
-                    <MainPage>
-                        <ErrorPage msg=error_msg />
-                    </MainPage>
-                }
-            }>
-                <Route
-                    path=path!("/")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <HomePage />
-                            </MainPage>
+            <MainPage>
+                <Routes fallback=move || {
+                    view! { <ErrorPage msg=error_msg /> }
+                }>
+                    <Route
+                        path=path!("/")
+                        view=move || {
+                            view! { <HomePage /> }
                         }
-                    }
-                />
-                <Route
-                    path=path!("/about")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <AboutPage />
-                            </MainPage>
+                    />
+                    <Route
+                        path=path!("/about")
+                        view=move || {
+                            view! { <AboutPage /> }
                         }
-                    }
-                />
-                <Route
-                    path=path!("/posts/:uid")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <PostPage />
-                            </MainPage>
+                    />
+                    <Route
+                        path=path!("/posts/:uid")
+                        view=move || {
+                            view! { <PostPage /> }
                         }
-                    }
-                />
-                <Route
-                    path=path!("/tags/:tag")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <ArchivePage />
-                            </MainPage>
+                    />
+                    <Route
+                        path=path!("/tags/:tag")
+                        view=move || {
+                            view! { <ArchivePage /> }
                         }
-                    }
-                />
-            </Routes>
+                    />
+                </Routes>
+            </MainPage>
         </Router>
     }
 }
