@@ -6,12 +6,7 @@ use crate::{
     MSG_LOAD_DATA_FAILURE,
 };
 use leptos::prelude::*;
-use leptos_router::{
-    hooks::use_params,
-    lazy_route,
-    params::Params,
-    LazyRoute,
-};
+use leptos_router::{hooks::use_params, lazy_route, params::Params, LazyRoute};
 
 #[derive(Params, PartialEq)]
 struct PostParams {

@@ -23,9 +23,7 @@ impl LazyRoute for AboutPageRoute {
     fn data() -> Self {
         let (msg, _) = signal(MSG_DATA_NOT_FOUND.to_string());
 
-        let data = Resource::new(|| (), |_| async move {
-            get_post("about").await
-        });
+        let data = Resource::new(|| (), |_| async move { get_post("about").await });
 
         Self { data, msg }
     }
@@ -36,20 +34,21 @@ impl LazyRoute for AboutPageRoute {
         view! {
             <Suspense>
                 {move || {
-                    data.get().map(|result| {
-                        match result {
-                            Some(page) => {
-                                let body = page.clone().body;
-                                view! {
-                                    <ContentSerif>
-                                        <ProseContent body=body />
-                                    </ContentSerif>
+                    data.get()
+                        .map(|result| {
+                            match result {
+                                Some(page) => {
+                                    let body = page.clone().body;
+                                    view! {
+                                        <ContentSerif>
+                                            <ProseContent body=body />
+                                        </ContentSerif>
+                                    }
+                                        .into_any()
                                 }
-                                    .into_any()
+                                None => view! { <MessageBox msg=msg /> }.into_any(),
                             }
-                            None => view! { <MessageBox msg=msg /> }.into_any(),
-                        }
-                    })
+                        })
                 }}
             </Suspense>
         }

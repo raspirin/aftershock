@@ -15,9 +15,10 @@ impl LazyRoute for HomePageRoute {
     fn data() -> Self {
         let (msg, _) = signal(String::from(MSG_LOAD_DATA_FAILURE));
 
-        let data = Resource::new(|| (), |_| async move {
-            get_published_posts_meta().await.map_err(|_| ())
-        });
+        let data = Resource::new(
+            || (),
+            |_| async move { get_published_posts_meta().await.map_err(|_| ()) },
+        );
 
         Self { data, msg }
     }
