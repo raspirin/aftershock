@@ -32,3 +32,15 @@ pub async fn get_page(name: String) -> Result<aftershock_bridge::Post, ServerFnE
         .await?;
     Ok(page)
 }
+
+#[server]
+pub async fn get_posts_meta_by_tag(
+    tag: String,
+) -> Result<Vec<aftershock_bridge::PostMeta>, ServerFnError> {
+    let url = format!("{API_BASE}/posts/tag/{tag}");
+    let meta = reqwest::get(url)
+        .await?
+        .json::<Vec<aftershock_bridge::PostMeta>>()
+        .await?;
+    Ok(meta)
+}

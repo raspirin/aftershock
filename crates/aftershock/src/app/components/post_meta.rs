@@ -1,65 +1,95 @@
 use leptos::{either::Either, prelude::*};
+use leptos_router::components::A;
 
 use crate::{
     app::components::TagListWithoutUl,
-    utils::{datetime::PreformattedDateTime, group_by},
+    utils::{
+        datetime::{AppDateTime, DateTime},
+        group_by,
+    },
 };
 
 #[component]
-pub fn PostMetaList(
+pub fn PostMetaListGroupByTime(
     post_meta_list: Vec<aftershock_bridge::PostMeta>,
     with_summary: bool,
 ) -> impl IntoView {
     let posts = post_meta_list
         .into_iter()
-        .map(|post| (PreformattedDateTime::from_timestamp(post.created_at), post))
+        .map(|post| (AppDateTime::from_timestamp(post.created_at), post))
         .collect::<Vec<_>>();
-    let posts = group_by(posts, |post| post.0.year, |post| post.clone());
+    let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
     let mut posts = posts.into_iter().collect::<Vec<_>>();
-    posts.sort_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
+    posts.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
 
     view! {
         <div class="flex flex-col gap-4 font-af-serif">
-            <For
-                each=move || posts.clone()
-                key=|(year, _)| *year
-                children=move |(year, x)| {
-                    view! { <PostMetaSection year=year post_meta_list=x with_summary=with_summary /> }.into_any()
-                }
-            />
+            {posts
+                .into_iter()
+                .map(|(year, x)| {
+                    let year = year.to_string();
+                    view! {
+                        <PostMetaSection
+                            section_title=year
+                            post_meta_list=x
+                            with_summary=with_summary
+                        />
+                    }
+                })
+                .collect_view()}
+        </div>
+    }
+}
+
+#[component]
+pub fn PostMetaListGroupByTag(
+    post_meta_list: Vec<aftershock_bridge::PostMeta>,
+    primary_tag: String,
+) -> impl IntoView {
+    let posts = post_meta_list
+        .into_iter()
+        .map(|post| (AppDateTime::from_timestamp(post.created_at), post))
+        .collect::<Vec<_>>();
+    let posts = group_by(posts, |post| post.0.year(), |post| post.clone());
+    let mut posts = posts.into_iter().collect::<Vec<_>>();
+    posts.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
+    let posts = posts.into_iter().flat_map(|(_, x)| x).collect();
+
+    view! {
+        <div class="flex flex-col gap-4 font-af-serif">
+            <PostMetaSection section_title=primary_tag post_meta_list=posts with_summary=false />
         </div>
     }
 }
 
 #[component]
 pub fn PostMetaSection(
-    year: i32,
-    post_meta_list: Vec<(PreformattedDateTime, aftershock_bridge::PostMeta)>,
+    section_title: String,
+    post_meta_list: Vec<(AppDateTime, aftershock_bridge::PostMeta)>,
     with_summary: bool,
 ) -> impl IntoView {
     view! {
         <section class="flex flex-col gap-4">
-            <h1 class="font-bold text-4xl">{year}</h1>
-            <For
-                each=move || post_meta_list.clone()
-                key=|(_, meta)| meta.uid.clone()
-                children=move |(time, meta)| {
-                    view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> }.into_any()
-                }
-            />
+            <h1 class="font-bold text-4xl">{section_title}</h1>
+            {post_meta_list
+                .into_iter()
+                .map(|(time, meta)| {
+                    view! { <PostMeta time=time post_meta=meta with_summary=with_summary /> }
+                })
+                .collect_view()}
         </section>
     }
 }
 
 #[component]
 pub fn PostMeta(
-    time: PreformattedDateTime,
+    time: AppDateTime,
     post_meta: aftershock_bridge::PostMeta,
     with_summary: bool,
 ) -> impl IntoView {
     let url = format!("/posts/{}", post_meta.uid);
-    let human_time = format!("{} {}", time.month_to_abbr(), time.day);
-    let machine_time = time.machine_friendly;
+    let human_time = format!("{} {}", time.month_to_abbr(), time.day());
+    let machine_time = time.machine_friendly().to_owned();
 
     view! {
         <div class="flex flex-col gap-1 sm:gap-2 md:gap-4">
@@ -68,7 +98,7 @@ pub fn PostMeta(
                     {human_time}
                 </time>
                 <h2 class="flex-grow">
-                    <a href=url.clone()>{post_meta.title}</a>
+                    <A href=url.clone()>{post_meta.title}</A>
                 </h2>
                 <ul class="flex flex-shrink-0 flex-row gap-1 ml-auto font-medium">
                     <TagListWithoutUl tags=post_meta.tags />
@@ -76,11 +106,11 @@ pub fn PostMeta(
             </div>
             {match with_summary {
                 true => {
-                    Either::Right(view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> })
+                    Either::Right(
+                        view! { <PostMetaSummary url=url>{post_meta.summary}</PostMetaSummary> },
+                    )
                 }
-                false => {
-                    Either::Left(())
-                },
+                false => Either::Left(()),
             }}
         </div>
     }
@@ -88,5 +118,9 @@ pub fn PostMeta(
 
 #[component]
 pub fn PostMetaSummary(url: String, children: Children) -> impl IntoView {
-    view! { <a href=url class="font-medium mx-1">{children()}</a> }
+    view! {
+        <A href=url attr:class="font-medium mx-1">
+            {children()}
+        </A>
+    }
 }

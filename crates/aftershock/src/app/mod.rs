@@ -2,14 +2,17 @@ use leptos::prelude::*;
 use leptos_meta::{provide_meta_context, MetaTags, Stylesheet, Title};
 use leptos_router::{
     components::{Route, Router, Routes},
-    path,
+    path, Lazy,
 };
 use pages::{
-    about_page::AboutPage, archive_page::ArchivePage, error_page::ErrorPage, home_page::HomePage,
-    main_page::MainPage, post_page::PostPage,
+    about_page::AboutPageRoute, error_page::ErrorPage, home_page::HomePageRoute,
+    main_page::MainPage,
 };
 
-use crate::{MSG_DATA_NOT_FOUND, TITLE};
+use crate::{
+    app::pages::{archive_page::ArchivePageRoute, post_page::PostPageRoute},
+    MSG_DATA_NOT_FOUND, TITLE,
+};
 
 mod components;
 mod pages;
@@ -47,54 +50,16 @@ pub fn App() -> impl IntoView {
         <Title text=TITLE />
 
         <Router>
-            <Routes fallback=move || {
-                view! {
-                    <MainPage>
-                        <ErrorPage msg=error_msg />
-                    </MainPage>
-                }
-            }>
-                <Route
-                    path=path!("/")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <HomePage />
-                            </MainPage>
-                        }
-                    }
-                />
-                <Route
-                    path=path!("/about")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <AboutPage />
-                            </MainPage>
-                        }
-                    }
-                />
-                <Route
-                    path=path!("/posts/:uid")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <PostPage />
-                            </MainPage>
-                        }
-                    }
-                />
-                <Route
-                    path=path!("/tags/:tag")
-                    view=move || {
-                        view! {
-                            <MainPage>
-                                <ArchivePage />
-                            </MainPage>
-                        }
-                    }
-                />
-            </Routes>
+            <MainPage>
+                <Routes fallback=move || {
+                    view! { <ErrorPage msg=error_msg /> }
+                }>
+                    <Route path=path!("/") view={Lazy::<HomePageRoute>::new()} />
+                    <Route path=path!("/about") view={Lazy::<AboutPageRoute>::new()} />
+                    <Route path=path!("/posts/:uid") view={Lazy::<PostPageRoute>::new()} />
+                    <Route path=path!("/tags/:tag") view={Lazy::<ArchivePageRoute>::new()} />
+                </Routes>
+            </MainPage>
         </Router>
     }
 }

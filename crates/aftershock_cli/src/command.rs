@@ -5,9 +5,23 @@ use clap::{Parser, Subcommand};
 #[command(propagate_version = true)]
 pub struct Cli {
     #[command(subcommand)]
-    pub command: Commands,
-    #[arg(short, long)]
-    pub kind: String,
+    pub command: KindCommands,
+}
+
+#[derive(Subcommand)]
+#[command(arg_required_else_help(true))]
+pub enum KindCommands {
+    /// Post operations
+    #[command(visible_alias = "post")]
+    Article {
+        #[command(subcommand)]
+        command: Commands,
+    },
+    /// Page operations
+    Page {
+        #[command(subcommand)]
+        command: Commands,
+    },
 }
 
 #[derive(Subcommand)]
