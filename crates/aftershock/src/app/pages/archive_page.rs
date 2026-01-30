@@ -56,12 +56,12 @@ impl LazyRoute for ArchivePageRoute {
                                 view! {
                                     <PostMetaListGroupByTag
                                         post_meta_list=posts.clone()
-                                        primary_tag=params
+                                        primary_tag=format!("#{}", params
                                             .read()
                                             .as_ref()
                                             .ok()
                                             .and_then(|p| p.tag.clone())
-                                            .unwrap_or_default()
+                                            .unwrap_or_default())
                                     />
                                 }
                                     .into_any()
