@@ -6,10 +6,12 @@ use leptos_router::{
 };
 use pages::{
     about_page::AboutPage, error_page::ErrorPage, home_page::HomePage, main_page::MainPage,
-    post_page::PostPage,
 };
 
-use crate::{app::pages::archive_page::ArchivePageRoute, MSG_DATA_NOT_FOUND, TITLE};
+use crate::{
+    app::pages::{archive_page::ArchivePageRoute, post_page::PostPageRoute},
+    MSG_DATA_NOT_FOUND, TITLE,
+};
 
 mod components;
 mod pages;
@@ -60,12 +62,7 @@ pub fn App() -> impl IntoView {
                             view! { <AboutPage /> }
                         }
                     />
-                    <Route
-                        path=path!("/posts/:uid")
-                        view=move || {
-                            view! { <PostPage /> }
-                        }
-                    />
+                    <Route path=path!("/posts/:uid") view={Lazy::<PostPageRoute>::new()} />
                     <Route path=path!("/tags/:tag") view={Lazy::<ArchivePageRoute>::new()} />
                 </Routes>
             </MainPage>
