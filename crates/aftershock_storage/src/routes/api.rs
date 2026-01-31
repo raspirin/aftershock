@@ -91,7 +91,6 @@ pub async fn update_post_by_uid(
 
     let ret: Vec<Post> = Worker::builder()
         .post()
-        .published_only()
         .by_id(post_uid)
         .update(update_content)
         .build(conn)

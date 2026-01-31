@@ -266,7 +266,7 @@ impl WorkerBuilder {
 
         match filter {
             Filter::All => Box::new(schema::contents::title.is_not_null()),
-            Filter::Id(id) => Box::new(schema::contents::uid.eq(id)),
+            Filter::Id(id) => Box::new(schema::contents::uid.like(id)),
             Filter::Name(name) => Box::new(schema::contents::title.eq(name)),
             Filter::Tag(tag) => Box::new(
                 schema::contents::id.eq_any(
