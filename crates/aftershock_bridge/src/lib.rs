@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct Post {
     pub uid: String,
     pub kind: String,
@@ -12,7 +12,7 @@ pub struct Post {
     pub summary: Option<String>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct NewPost {
     pub title: String,
     pub kind: String,
@@ -47,7 +47,7 @@ impl From<Post> for PostMeta {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UpdatePost {
     #[serde(default)]
     pub title: Option<String>,
