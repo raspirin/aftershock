@@ -65,9 +65,10 @@ pub fn PostMetaListGroupByTag(
 #[component]
 pub fn PostMetaSection(
     section_title: String,
-    post_meta_list: Vec<(AppDateTime, aftershock_bridge::PostMeta)>,
+    mut post_meta_list: Vec<(AppDateTime, aftershock_bridge::PostMeta)>,
     with_summary: bool,
 ) -> impl IntoView {
+    post_meta_list.sort_unstable_by(|lhs, rhs| rhs.0.cmp(&lhs.0));
     view! {
         <section class="flex flex-col gap-4">
             <h1 class="font-bold text-4xl">{section_title}</h1>
@@ -94,7 +95,7 @@ pub fn PostMeta(
     view! {
         <div class="flex flex-col gap-1 sm:gap-2 md:gap-4">
             <div class="flex flex-row items-center gap-4 w-full font-semibold">
-                <time datetime=machine_time class="sm:pr-8 md:pr-16 text-right w-fit flex-shrink-0">
+                <time datetime=machine_time class="sm:pr-8 md:pr-16 text-left min-w-28 flex-shrink-0">
                     {human_time}
                 </time>
                 <h2 class="flex-grow">
