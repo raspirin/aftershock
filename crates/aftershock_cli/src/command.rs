@@ -27,33 +27,37 @@ pub enum KindCommands {
 #[derive(Subcommand)]
 #[command(arg_required_else_help(true))]
 pub enum Commands {
-    /// Add a new post
+    /// Add a new content
     Add {
-        #[arg(short, long)]
+        /// The path to the file
         path: String,
     },
-    /// List current post
+    /// List current contents
+    #[command(visible_alias = "ls")]
     List,
-    /// View a specified post
+    /// View a specified content
     View {
-        #[arg(short, long)]
+        /// The uid of the content
         id: String,
     },
-    /// Delete a post
+    /// Delete a specified content
+    #[command(visible_alias = "del")]
     Delete {
-        #[arg(short, long)]
+        /// The uid of the content
         id: String,
     },
-    /// Update an existing post
+    /// Update an existing content
+    #[command(visible_alias = "u")]
     Update {
-        #[arg(short, long)]
+        /// The path to the updated source file
         path: String,
-        #[arg(short, long)]
+        /// The uid of the content
         id: String,
     },
-    /// Publish a post
+    /// Publish a content
+    #[command(visible_alias = "pub")]
     Publish {
-        #[arg(short, long)]
+        /// The uid of the content
         id: String,
     },
 }
