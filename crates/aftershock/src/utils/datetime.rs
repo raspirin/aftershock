@@ -101,7 +101,7 @@ impl DateTime for PreformattedDateTime {
 #[cfg(not(target_arch = "wasm32"))]
 impl PartialEq for PreformattedDateTime {
     fn eq(&self, other: &Self) -> bool {
-        self.orig == other.orig
+        self.orig() == other.orig()
     }
 }
 
@@ -118,7 +118,7 @@ impl PartialOrd for PreformattedDateTime {
 #[cfg(not(target_arch = "wasm32"))]
 impl Ord for PreformattedDateTime {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.orig.cmp(&other.orig)
+        self.orig().cmp(&other.orig())
     }
 }
 
@@ -193,7 +193,7 @@ impl DateTime for UserLocalDateTime {
 #[cfg(target_arch = "wasm32")]
 impl PartialEq for UserLocalDateTime {
     fn eq(&self, other: &Self) -> bool {
-        self.orig == other.orig
+        self.orig() == other.orig()
     }
 }
 
@@ -210,6 +210,6 @@ impl PartialOrd for UserLocalDateTime {
 #[cfg(target_arch = "wasm32")]
 impl Ord for UserLocalDateTime {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        self.orig.cmp(&other.orig)
+        self.orig().cmp(&other.orig())
     }
 }
