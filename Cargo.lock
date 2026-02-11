@@ -59,11 +59,15 @@ dependencies = [
  "diesel",
  "diesel_migrations",
  "dotenvy",
+ "http-body-util",
  "nid",
  "r2d2",
  "serde",
+ "serde_json",
  "thiserror 2.0.18",
  "tokio",
+ "tower",
+ "uuid",
 ]
 
 [[package]]
