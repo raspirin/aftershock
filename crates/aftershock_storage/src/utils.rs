@@ -13,3 +13,23 @@ impl nid::alphabet::Alphabet for Afterbet {
     const SYMBOL_LIST: &'static [u8] =
         b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-";
 }
+
+pub fn slugify(title: &str) -> String {
+    title
+        .to_lowercase()
+        .chars()
+        .map(|c| {
+            if c.is_alphanumeric() {
+                c
+            } else if c.is_whitespace() {
+                '-'
+            } else {
+                '-'
+            }
+        })
+        .collect::<String>()
+        .replace("---", "-")
+        .replace("--", "-")
+        .trim_matches('-')
+        .to_string()
+}

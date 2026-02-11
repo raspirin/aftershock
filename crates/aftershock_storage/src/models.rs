@@ -108,7 +108,7 @@ impl<'a> NewContent<'a> {
     ) -> Self {
         let created_at = utils::now();
         let uid = match kind {
-            ContentKind::Page => title.to_lowercase(),
+            ContentKind::Page => utils::slugify(title),
             _ => utils::Nid::new().to_string(),
         };
         let kind = kind.into();
