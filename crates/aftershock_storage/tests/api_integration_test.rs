@@ -688,3 +688,409 @@ async fn test_update_partial_fields_preserves_others() {
     
     delete_post(&mut router, &uid).await;
 }
+
+// =============================================================================
+// MUST SUCCEED TESTS (reduce false positives)
+// =============================================================================
+
+/// Test that accessing a resource after creation returns the same data
+#[tokio::test]
+async fn test_must_read_created_post_success() {
+    let mut router = test_router();
+    let (uid, created) = create_test_post(&mut router, true).await;
+    
+    // Must be able to read the same post back
+    let (status, read) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Reading a just-created post must succeed");
+    assert_eq!(read["uid"], created["uid"], "UID must match");
+    assert_eq!(read["title"], created["title"], "Title must match");
+    assert_eq!(read["body"], created["body"], "Body must match");
+    assert_eq!(read["published"], created["published"], "Published flag must match");
+    
+    delete_post(&mut router, &uid).await;
+}
+
+/// Test that API handles empty body (may accept or reject)
+#[tokio::test]
+async fn test_empty_body_handling() {
+    let mut router = test_router();
+    
+    let new_post = json!({
+        "title": "Post with empty body",
+        "kind": "post",
+        "body": "",
+        "published": true
+    });
+    
+    let (status, body) = make_request(&mut router, "POST", &format!("{}/posts", API_V1), Some(new_post)).await;
+    // API may accept or reject empty body - this test documents current behavior
+    if status == 200 {
+        assert_eq!(body["body"].as_str(), Some(""), "Empty body must be preserved");
+        let uid = body["uid"].as_str().unwrap();
+        delete_post(&mut router, uid).await;
+    } else {
+        // If API rejects empty body, it should return an error status (422)
+        assert!(
+            status >= 400 && status < 500,
+            "Rejection of empty body should return 4xx status, got {}",
+            status
+        );
+    }
+}
+
+/// Test update with all fields must succeed and persist all changes
+#[tokio::test]
+async fn test_must_update_all_fields_success() {
+    let mut router = test_router();
+    let (uid, _) = create_test_post(&mut router, false).await;
+    
+    let update = json!({
+        "title": "Completely Updated Title",
+        "body": "Completely updated body content.",
+        "published": true,
+        "deleted": false
+    });
+    
+    let (status, updated) = make_request(&mut router, "PUT", &format!("{}/posts/uid/{}", API_V1, uid), Some(update)).await;
+    assert_eq!(status, 200, "Full update must succeed");
+    assert_eq!(updated["title"], "Completely Updated Title");
+    assert_eq!(updated["body"], "Completely updated body content.");
+    assert_eq!(updated["published"], true);
+    
+    // Verify persistence - read again to ensure update was saved
+    let (status, read) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Reading after update must succeed");
+    assert_eq!(read["title"], "Completely Updated Title", "Update must persist");
+    assert_eq!(read["published"], true, "Published flag must persist");
+    
+    delete_post(&mut router, &uid).await;
+}
+
+/// Test that list filters work correctly - published posts must appear in published list
+#[tokio::test]
+async fn test_must_list_only_published_posts_success() {
+    let mut router = test_router();
+    
+    // Create unpublished post
+    let (unpub_uid, _) = create_test_post(&mut router, false).await;
+    
+    // Create published post
+    let (pub_uid, _) = create_test_post(&mut router, true).await;
+    
+    // Get published list
+    let (status, list) = make_request(&mut router, "GET", &format!("{}/posts?published=true", API_V1), None).await;
+    assert_eq!(status, 200);
+    
+    // API may return array directly or wrapped in object with items field
+    let items = if list.is_array() {
+        list.as_array().unwrap()
+    } else {
+        list["items"].as_array().expect("Response should be array or have items field")
+    };
+    
+    let pub_uids: Vec<_> = items.iter().filter_map(|i| i["uid"].as_str()).collect();
+    
+    assert!(
+        pub_uids.contains(&pub_uid.as_str()),
+        "Published post must appear in published list"
+    );
+    assert!(
+        !pub_uids.contains(&unpub_uid.as_str()),
+        "Unpublished post must NOT appear in published list"
+    );
+    
+    delete_post(&mut router, &unpub_uid).await;
+    delete_post(&mut router, &pub_uid).await;
+}
+
+// =============================================================================
+// MUST FAIL TESTS (reduce false negatives)
+// =============================================================================
+
+/// Test that accessing non-existent UID must fail with 404
+#[tokio::test]
+async fn test_must_fail_get_nonexistent_post() {
+    let mut router = test_router();
+    let fake_uid = "nonexistent-uid-12345";
+    
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, fake_uid), None).await;
+    assert_eq!(status, 404, "Getting non-existent post must return 404");
+}
+
+/// Test that accessing non-existent UID must fail with 404 (page)
+#[tokio::test]
+async fn test_must_fail_get_nonexistent_page() {
+    let mut router = test_router();
+    let fake_uid = "nonexistent-page-uid-67890";
+    
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/pages/uid/{}", API_V1, fake_uid), None).await;
+    assert_eq!(status, 404, "Getting non-existent page must return 404");
+}
+
+/// Test that updating non-existent post must fail
+#[tokio::test]
+async fn test_must_fail_update_nonexistent_post() {
+    let mut router = test_router();
+    let fake_uid = "fake-update-uid-99999";
+    
+    let update = json!({
+        "title": "This should not work"
+    });
+    
+    let (status, _) = make_request(&mut router, "PUT", &format!("{}/posts/uid/{}", API_V1, fake_uid), Some(update)).await;
+    assert_eq!(status, 404, "Updating non-existent post must return 404");
+}
+
+/// Test that deleting non-existent post must fail
+#[tokio::test]
+async fn test_must_fail_delete_nonexistent_post() {
+    let mut router = test_router();
+    let fake_uid = "fake-delete-uid-88888";
+    
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/posts/uid/{}", API_V1, fake_uid), None).await;
+    assert_eq!(status, 404, "Deleting non-existent post must return 404");
+}
+
+/// Test that creating post without required 'kind' field must fail
+#[tokio::test]
+async fn test_must_fail_create_without_kind() {
+    let mut router = test_router();
+    
+    let bad_post = json!({
+        "title": "No kind post",
+        "body": "This post has no kind",
+        "published": true
+    });
+    
+    let (status, _) = make_request(&mut router, "POST", &format!("{}/posts", API_V1), Some(bad_post)).await;
+    // API returns 422 for deserialization/validation errors
+    assert!(
+        status >= 400 && status < 500,
+        "Creating post without kind must return 4xx, got {}",
+        status
+    );
+}
+
+/// Test that creating post with empty title must fail
+#[tokio::test]
+async fn test_must_fail_create_with_empty_title() {
+    let mut router = test_router();
+    
+    let bad_post = json!({
+        "title": "",
+        "kind": "post",
+        "body": "This post has empty title",
+        "published": true
+    });
+    
+    let (status, _) = make_request(&mut router, "POST", &format!("{}/posts", API_V1), Some(bad_post)).await;
+    // API returns 422 for validation errors
+    assert!(
+        status >= 400 && status < 500,
+        "Creating post with empty title must return 4xx, got {}",
+        status
+    );
+}
+
+/// Test that accessing deleted post must fail
+#[tokio::test]
+async fn test_must_fail_access_deleted_post() {
+    let mut router = test_router();
+    let (uid, _) = create_test_post(&mut router, true).await;
+    
+    // Delete the post
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Delete must succeed first");
+    
+    // Try to access deleted post
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 404, "Accessing deleted post must return 404");
+    
+    // Cleanup already done: post is deleted
+}
+
+/// Test that double-deleting returns 404 on second attempt
+#[tokio::test]
+async fn test_must_fail_double_delete() {
+    let mut router = test_router();
+    let (uid, _) = create_test_post(&mut router, true).await;
+    
+    // First delete
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/posts/uid/{}", API_V1, &uid), None).await;
+    assert_eq!(status, 200, "First delete must succeed");
+    
+    // Second delete
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/posts/uid/{}", API_V1, &uid), None).await;
+    assert_eq!(status, 404, "Double-deleting must return 404");
+}
+
+// =============================================================================
+// SELF-CONTAINED CRUD CYCLE TESTS (each test creates its own data and cleans up)
+// =============================================================================
+
+/// Complete CRUD lifecycle for a single post - ensures creation, reading, update, and deletion work
+/// Note: GET /posts/uid/{uid} only returns published posts, so we create as published initially
+/// This is necessary because the API filters unpublished content from individual retrieval
+#[tokio::test]
+async fn test_post_crud_cycle_isolation() {
+    let mut router = test_router();
+    
+    // 1. CREATE (as published since GET endpoint filters unpublished)
+    let new_post = json!({
+        "title": "CRUD Cycle Test Post",
+        "kind": "post",
+        "body": "Initial body",
+        "tags": ["crud", "test"],
+        "published": true
+    });
+    let (status, created) = make_request(&mut router, "POST", &format!("{}/posts", API_V1), Some(new_post)).await;
+    assert_eq!(status, 200, "Create must succeed");
+    let uid = created["uid"].as_str().unwrap().to_string();
+    
+    // 2. READ (verify creation - this works because post is published)
+    let (status, read1) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Read after create must succeed");
+    assert_eq!(read1["title"], "CRUD Cycle Test Post");
+    assert_eq!(read1["published"], true, "Post must be published as created");
+    
+    // 3. UPDATE (testing that both content and publish status can be changed)
+    let update = json!({
+        "title": "Updated CRUD Title",
+        "body": "Updated body",
+        "published": false
+    });
+    let (status, updated) = make_request(&mut router, "PUT", &format!("{}/posts/uid/{}", API_V1, uid), Some(update)).await;
+    assert_eq!(status, 200, "Update must succeed");
+    assert_eq!(updated["title"], "Updated CRUD Title");
+    assert_eq!(updated["published"], false, "Post must be unpublished after update");
+    
+    // 3b. VERIFY UNPUBLISHED - Read via admin/all endpoint (GET /posts/uid/{uid} won't return unpublished)
+    // We use list endpoint to verify the update persisted
+    let (status, list) = make_request(&mut router, "GET", &format!("{}/posts/all", API_V1), None).await;
+    assert_eq!(status, 200, "List must succeed");
+    let found = list.as_array().unwrap().iter().any(|p| p["uid"] == uid && p["published"] == false);
+    assert!(found, "Unpublished post must be visible in all posts list");
+    
+    // Re-publish for deletion test
+    let republish = json!({ "published": true });
+    let (status, _) = make_request(&mut router, "PUT", &format!("{}/posts/uid/{}", API_V1, uid), Some(republish)).await;
+    assert_eq!(status, 200, "Re-publish must succeed");
+    
+    // 4. READ (verify republish persisted)
+    let (status, read2) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Read after re-publish must succeed");
+    assert_eq!(read2["title"], "Updated CRUD Title");
+    assert_eq!(read2["body"], "Updated body");
+    assert_eq!(read2["published"], true, "Post must be published after re-publish");
+    
+    // 5. DELETE
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/posts/uid/{}", API_V1, &uid), None).await;
+    assert_eq!(status, 200, "Delete must succeed");
+    
+    // 6. VERIFY GONE
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 404, "Post must be gone after delete");
+}
+/// Complete lifecycle for page with same pattern
+/// Note: GET /pages/uid/{uid} only returns published pages, so we create as published
+#[tokio::test]
+async fn test_page_crud_cycle_isolation() {
+    let mut router = test_router();
+    
+    // 1. CREATE (as published since GET endpoint filters unpublished)
+    let new_page = json!({
+        "title": "CRUD Cycle Test Page",
+        "kind": "page",
+        "body": "Initial page body",
+        "tags": ["isolated", "crud"],
+        "published": true
+    });
+    let (status, created) = make_request(&mut router, "POST", &format!("{}/pages", API_V1), Some(new_page)).await;
+    assert_eq!(status, 200, "Create page must succeed");
+    let uid = created["uid"].as_str().unwrap().to_string();
+    
+    // 2. READ (verify creation - this works because page is published)
+    let (status, read) = make_request(&mut router, "GET", &format!("{}/pages/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 200, "Read page must succeed");
+    assert_eq!(read["kind"], "page");
+    assert_eq!(read["published"], true, "Page must be published as created");
+    
+    // 3. UPDATE
+    let update = json!({ 
+        "title": "Updated Page Title",
+        "body": "Updated page body"
+    });
+    let (status, updated) = make_request(&mut router, "PUT", &format!("{}/pages/uid/{}", API_V1, uid), Some(update)).await;
+    assert_eq!(status, 200, "Update page must succeed");
+    assert_eq!(updated["title"], "Updated Page Title");
+    assert_eq!(updated["body"], "Updated page body");
+    assert_eq!(updated["published"], true, "Page must remain published");
+    
+    // 4. DELETE
+    let (status, _) = make_request(&mut router, "DELETE", &format!("{}/pages/uid/{}", API_V1, &uid), None).await;
+    assert_eq!(status, 200, "Delete page must succeed");
+    
+    // 5. VERIFY GONE
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/pages/uid/{}", API_V1, uid), None).await;
+    assert_eq!(status, 404, "Page must be gone after delete");
+}
+
+/// Test that multiple posts can exist independently
+#[tokio::test]
+async fn test_multiple_posts_isolation() {
+    let mut router = test_router();
+    
+    // Create multiple independent posts (all published so they can be retrieved via /posts/uid/{uid})
+    let (uid1, post1) = create_test_post(&mut router, true).await;
+    let (uid2, _post2) = create_test_post(&mut router, true).await;
+    let (uid3, post3) = create_test_post(&mut router, true).await;
+    
+    // Update only post2
+    let update = json!({ "title": "Only Post2 Modified" });
+    let (status, _) = make_request(&mut router, "PUT", &format!("{}/posts/uid/{}", API_V1, &uid2), Some(update)).await;
+    assert_eq!(status, 200);
+    
+    // Verify post1 unchanged
+    let (status, check1) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, &uid1), None).await;
+    assert_eq!(status, 200);
+    assert_eq!(check1["title"], post1["title"], "Post1 must be unchanged");
+    
+    // Verify post2 changed
+    let (status, check2) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, &uid2), None).await;
+    assert_eq!(status, 200);
+    assert_eq!(check2["title"], "Only Post2 Modified", "Post2 must be changed");
+    
+    // Verify post3 unchanged
+    let (status, check3) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, &uid3), None).await;
+    assert_eq!(status, 200);
+    assert_eq!(check3["title"], post3["title"], "Post3 must be unchanged");
+    
+    // Cleanup all
+    delete_post(&mut router, &uid1).await;
+    delete_post(&mut router, &uid2).await;
+    delete_post(&mut router, &uid3).await;
+}
+
+/// Test that operations on wrong endpoint fail correctly (post on page endpoint)
+#[tokio::test]
+async fn test_endpoint_validation_must_fail() {
+    let mut router = test_router();
+    
+    // Create a post
+    let (post_uid, _) = create_test_post(&mut router, true).await;
+    
+    // Try to access post through pages endpoint - must fail
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/pages/uid/{}", API_V1, &post_uid), None).await;
+    assert_eq!(status, 404, "Accessing post through pages endpoint must fail");
+    
+    // Try to update post through pages endpoint - must fail
+    let update = json!({ "title": "Wrong endpoint" });
+    let (status, _) = make_request(&mut router, "PUT", &format!("{}/pages/uid/{}", API_V1, &post_uid), Some(update)).await;
+    assert_eq!(status, 404, "Updating post through pages endpoint must fail");
+    
+    // Post still accessible through correct endpoint
+    let (status, _) = make_request(&mut router, "GET", &format!("{}/posts/uid/{}", API_V1, &post_uid), None).await;
+    assert_eq!(status, 200, "Post must still be accessible through correct endpoint");
+    
+    delete_post(&mut router, &post_uid).await;
+}
