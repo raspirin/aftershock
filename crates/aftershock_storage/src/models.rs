@@ -80,6 +80,7 @@ impl IntoPost for (Content, Vec<Tag>) {
             body: content.body,
             tags,
             summary: content.summary,
+            published: content.published,
         }
     }
 }

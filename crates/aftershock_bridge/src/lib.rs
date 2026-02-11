@@ -10,6 +10,7 @@ pub struct Post {
     pub tags: Vec<String>,
     pub body: String,
     pub summary: Option<String>,
+    pub published: bool,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -31,6 +32,7 @@ pub struct PostMeta {
     pub title: String,
     pub tags: Vec<String>,
     pub summary: Option<String>,
+    pub published: bool,
 }
 
 impl From<Post> for PostMeta {
@@ -43,6 +45,7 @@ impl From<Post> for PostMeta {
             title: value.title,
             tags: value.tags,
             summary: value.summary,
+            published: value.published,
         }
     }
 }
