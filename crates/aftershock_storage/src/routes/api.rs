@@ -106,7 +106,6 @@ pub async fn delete_post_by_uid(Path(post_uid): Path<String>) -> Result<Json<Pos
     let conn = &mut POOL.clone().get()?;
     let ret: Vec<Post> = Worker::builder()
         .post()
-        .published_only()
         .by_id(post_uid)
         .delete()
         .build(conn)
@@ -189,7 +188,6 @@ pub async fn update_page_by_uid(
 
     let ret: Vec<Post> = Worker::builder()
         .page()
-        .published_only()
         .by_id(page_uid)
         .update(update_content)
         .build(conn)
@@ -205,7 +203,6 @@ pub async fn delete_page_by_uid(Path(page_uid): Path<String>) -> Result<Json<Pos
     let conn = &mut POOL.clone().get()?;
     let ret: Vec<Post> = Worker::builder()
         .page()
-        .published_only()
         .by_id(page_uid)
         .delete()
         .build(conn)
