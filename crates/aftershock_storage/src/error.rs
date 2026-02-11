@@ -21,8 +21,11 @@ impl IntoResponse for Error {
     fn into_response(self) -> axum::response::Response {
         let msg = format!("{self}");
 
-        match self {
-            Self::NotFound(msg) => (StatusCode::NOT_FOUND, msg).into_response(),
+        match &self {
+            Self::NotFound(_) => (StatusCode::NOT_FOUND, msg).into_response(),
+            Self::DatabaseError(diesel::result::Error::NotFound) => {
+                (StatusCode::NOT_FOUND, "Resource not found".to_string()).into_response()
+            }
             _ => (StatusCode::INTERNAL_SERVER_ERROR, msg).into_response(),
         }
     }
